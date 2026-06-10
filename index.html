@@ -1,0 +1,3836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exhibition Development OS — ECHO</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:        #1a1714;
+    --ink-muted:  #5a534d;
+    --ink-faint:  #9a9189;
+    --paper:      #f5f2ec;
+    --paper-warm: #ede9e0;
+    --paper-card: #faf8f4;
+    --terra:      #c4603a;
+    --terra-light:#e8987c;
+    --terra-pale: #f5e0d8;
+    --rule:       #ddd8cf;
+    --serif:      'Georgia', 'Times New Roman', serif;
+    --sans:       'Helvetica Neue', 'Arial', sans-serif;
+    --mono:       'Courier New', monospace;
+    --radius:     4px;
+    --shadow:     0 1px 4px rgba(26,23,20,0.08), 0 4px 16px rgba(26,23,20,0.05);
+    --sage:       #4e7d5e;
+    --sage-light: #78a888;
+    --sage-pale:  #d8eee2;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Typography ── */
+  h1, h2, h3, h4 { font-family: var(--serif); font-weight: normal; line-height: 1.2; }
+  h1 { font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.02em; }
+  h2 { font-size: clamp(1.25rem, 3vw, 1.75rem); letter-spacing: -0.01em; }
+  h3 { font-size: 1.125rem; }
+  h4 { font-size: 0.9375rem; font-family: var(--sans); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  p { color: var(--ink-muted); }
+
+  /* ── Header / Nav ── */
+  #site-header {
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: stretch;
+    gap: 3rem;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1rem 0;
+    flex-shrink: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .wordmark-icon {
+    width: 28px; height: 28px;
+    background: var(--terra);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .wordmark-icon svg { display: block; }
+
+  .wordmark-text {
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .wordmark-text span { color: var(--ink-faint); font-weight: 400; }
+
+  nav { display: flex; gap: 0; }
+
+  .nav-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0 1.125rem;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    white-space: nowrap;
+    position: relative;
+    top: 1px;
+  }
+
+  .nav-tab:hover { color: var(--ink); background: rgba(196,96,58,0.04); }
+
+  .nav-tab.active {
+    color: var(--terra);
+    border-bottom-color: var(--terra);
+  }
+
+  .nav-tab:focus-visible {
+    outline: 2px solid var(--terra);
+    outline-offset: -3px;
+    border-radius: 2px;
+  }
+
+  /* ── Main content ── */
+  main { max-width: 1200px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+  /* ── Tab panels ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Placeholder panels ── */
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    opacity: 0.45;
+  }
+
+  .placeholder svg { color: var(--terra); }
+  .placeholder h2 { font-family: var(--serif); }
+  .placeholder p { font-size: 0.875rem; text-align: center; max-width: 26rem; }
+
+  /* ── Overview: Hero ── */
+  .hero {
+    padding: 5rem 0 4rem;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: end;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--terra);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--terra);
+  }
+
+  .hero-title { color: var(--ink); margin-bottom: 1.5rem; }
+
+  .hero-subtitle {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--ink-muted);
+    font-style: italic;
+    max-width: 36rem;
+    line-height: 1.5;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .hero-badge {
+    background: var(--terra-pale);
+    color: var(--terra);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.375rem 0.75rem;
+    border-radius: 2px;
+  }
+
+  .hero-date {
+    font-size: 0.8125rem;
+    color: var(--ink-faint);
+  }
+
+  /* ── Tour Route ── */
+  .tour-section {
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-label {
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin-bottom: 2rem;
+  }
+
+  .tour-route {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 0.5rem;
+  }
+
+  .tour-city {
+    flex: 1;
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    padding: 1.75rem 1.5rem;
+    position: relative;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .tour-city:hover {
+    border-color: var(--terra-light);
+    box-shadow: var(--shadow);
+    z-index: 1;
+  }
+
+  .tour-city:not(:first-child) { border-left: none; }
+  .tour-city:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .tour-city:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+
+  .city-number {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--terra);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.875rem;
+  }
+
+  .city-name {
+    font-family: var(--serif);
+    font-size: 1.375rem;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .city-venue {
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .city-dates {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .city-tag {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--terra);
+  }
+
+  .city-tag.origin { background: var(--terra); }
+  .city-tag.leg2   { background: var(--terra-light); }
+  .city-tag.leg3   { background: var(--terra-pale); border: 1.5px solid var(--terra-light); }
+
+  .tour-connector {
+    display: flex;
+    align-items: center;
+    color: var(--rule);
+    font-size: 1.5rem;
+    padding: 0 0.25rem;
+    position: relative;
+    z-index: 2;
+    /* sits between cards; hidden via overlap */
+    width: 0; overflow: visible;
+  }
+
+  /* ── SVG route map ── */
+  .route-map-wrap {
+    margin-top: 2.5rem;
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* ── Metric tiles ── */
+  .metrics-section {
+    padding: 3.5rem 0;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 1.5rem;
+  }
+
+  .metric-tile {
+    background: var(--paper-card);
+    padding: 2rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: background 0.15s;
+  }
+
+  .metric-tile:hover { background: var(--paper-warm); }
+
+  .metric-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--terra-pale);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .metric-icon svg { color: var(--terra); }
+
+  .metric-value {
+    font-family: var(--serif);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .metric-value sup {
+    font-size: 0.45em;
+    vertical-align: super;
+    font-family: var(--sans);
+    color: var(--terra);
+  }
+
+  .metric-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+
+  .metric-desc {
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .metric-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--terra);
+    background: var(--terra-pale);
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    align-self: flex-start;
+  }
+
+  /* ── Thesis strip ── */
+  .thesis-strip {
+    margin: 3.5rem 0 0;
+    padding: 2.5rem 3rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .thesis-strip blockquote {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2vw, 1.375rem);
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--paper-warm);
+    border: none;
+    padding: 0;
+  }
+
+  .thesis-strip blockquote cite {
+    display: block;
+    font-style: normal;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--terra-light);
+    margin-top: 1rem;
+  }
+
+  .thesis-strip .strip-aside {
+    text-align: right;
+  }
+
+  .thesis-strip .strip-aside .kpi-big {
+    font-family: var(--serif);
+    font-size: 3rem;
+    color: var(--terra-light);
+    line-height: 1;
+  }
+
+  .thesis-strip .strip-aside p {
+    font-size: 0.75rem;
+    color: #9a9189;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-meta { align-items: flex-start; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .thesis-strip { grid-template-columns: 1fr; }
+    .thesis-strip .strip-aside { text-align: left; }
+  }
+
+  /* ── Process Mapper ── */
+  .pm-header {
+    padding: 3.5rem 0 2.25rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .pm-header-text .hero-eyebrow { margin-bottom: 0.5rem; }
+  .pm-header-text h2 { color: var(--ink); }
+
+  .model-toggle {
+    display: flex;
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 3px;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .model-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  .model-btn.active {
+    background: var(--paper-card);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(26,23,20,0.12);
+  }
+
+  .model-btn.active[data-model="linear"]      { border-left: 2px solid var(--ink-faint); }
+  .model-btn.active[data-model="mediacentric"]{ border-left: 2px solid var(--sage); }
+
+  .pm-view-wrap { margin-top: 2.5rem; }
+
+  .pm-view { display: none; }
+  .pm-view.active { display: block; animation: pmFadeIn 0.32s ease; }
+  @keyframes pmFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .pm-diagram {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .pm-diagram svg { width: 100%; display: block; }
+
+  .pm-callouts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+
+  .pm-callout {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1rem 1.125rem 1.125rem;
+    background: var(--paper-card);
+  }
+
+  .pm-callout.pain  { border-top: 2.5px solid var(--terra-light); }
+  .pm-callout.new   { border-top: 2.5px solid var(--sage); }
+
+  .pm-callout-tag {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .pm-callout.pain .pm-callout-tag  { color: var(--terra); }
+  .pm-callout.new  .pm-callout-tag  { color: var(--sage); }
+
+  .pm-callout-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .pm-callout p {
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .pm-caption {
+    margin-top: 1.5rem;
+    padding: 1.125rem 1.5rem;
+    border-left: 3px solid var(--rule);
+    background: var(--paper-warm);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  .pm-caption p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.9375rem;
+    color: var(--ink-muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 900px) {
+    .pm-header { flex-direction: column; align-items: flex-start; }
+    .pm-callouts { grid-template-columns: 1fr; }
+  }
+
+  /* ── Costing Model ── */
+  .cm-tab-header {
+    padding: 3.5rem 0 2.25rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .cm-tab-header .hero-eyebrow { margin-bottom: 0.5rem; }
+  .cm-tab-header h2 { color: var(--ink); }
+
+  .cm-tab-header p {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+  }
+
+  .cm-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 1.75rem;
+    padding-top: 1.75rem;
+    align-items: start;
+  }
+
+  /* ── Inputs panel ── */
+  .cm-inputs {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.5rem 1.25rem;
+    position: sticky;
+    top: calc(54px + 1.25rem);
+  }
+
+  .cm-panel-label {
+    font-family: var(--sans);
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    margin-bottom: 1.375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cm-panel-label::before {
+    content: '';
+    display: inline-block;
+    width: 14px; height: 1px;
+    background: var(--rule);
+  }
+
+  .cm-input-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .cm-input-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.45rem;
+    gap: 0.5rem;
+  }
+
+  .cm-label {
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .cm-val {
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--terra);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .cm-input-group.key .cm-label { color: var(--ink); font-weight: 600; }
+  .cm-input-group.key .cm-val   { color: var(--sage); }
+
+  .cm-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    display: block;
+    background: var(--rule);
+  }
+
+  .cm-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: var(--terra);
+    border: 2px solid var(--paper-card);
+    box-shadow: 0 1px 4px rgba(26,23,20,0.22);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .cm-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .cm-range::-moz-range-thumb {
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: var(--terra);
+    border: 2px solid var(--paper-card);
+    box-shadow: 0 1px 4px rgba(26,23,20,0.22);
+    cursor: pointer;
+  }
+
+  .cm-input-group.key .cm-range::-webkit-slider-thumb { background: var(--sage); }
+  .cm-input-group.key .cm-range::-moz-range-thumb     { background: var(--sage); }
+
+  .cm-range-ends {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.3rem;
+  }
+
+  .cm-range-ends span {
+    font-family: var(--mono);
+    font-size: 0.5625rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .cm-key-badge {
+    display: inline-block;
+    font-size: 0.5625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--sage);
+    background: var(--sage-pale);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    margin-left: 0.375rem;
+    vertical-align: middle;
+  }
+
+  .cm-divider { height: 1px; background: var(--rule); margin: 1.125rem 0; }
+
+  .cm-how-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 0.55rem 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+    margin-top: 0.25rem;
+  }
+
+  .cm-how-btn:hover { background: var(--paper-warm); color: var(--ink); }
+
+  .cm-how-btn .cm-chev { transition: transform 0.22s; flex-shrink: 0; }
+  .cm-how-btn.open .cm-chev { transform: rotate(180deg); }
+
+  .cm-how-body {
+    display: none;
+    margin-top: 0.625rem;
+    padding: 0.875rem 1rem;
+    background: var(--paper-warm);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    line-height: 1.55;
+  }
+
+  .cm-how-body.open { display: block; }
+
+  .cm-how-body p { color: var(--ink-muted); margin-bottom: 0.4rem; }
+  .cm-how-body p:last-child { margin-bottom: 0; }
+  .cm-how-body strong { color: var(--ink); font-weight: 600; }
+
+  /* ── Results panel ── */
+  .cm-total-block {
+    background: var(--ink);
+    border-radius: var(--radius);
+    padding: 1.875rem 1.875rem 1.625rem;
+    margin-bottom: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cm-total-block::after {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(196,96,58,0.08);
+    pointer-events: none;
+  }
+
+  .cm-total-eyebrow {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--terra-light);
+    margin-bottom: 0.625rem;
+    opacity: 0.8;
+  }
+
+  .cm-total-value {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 2.875rem);
+    color: var(--paper);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.75rem;
+  }
+
+  .cm-total-context {
+    font-size: 0.8125rem;
+    color: rgba(250,248,244,0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .cm-margin-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .cm-margin-badge.positive {
+    background: rgba(78,125,94,0.28);
+    color: #a8d4b4;
+  }
+
+  .cm-margin-badge.negative {
+    background: rgba(196,96,58,0.28);
+    color: var(--terra-light);
+  }
+
+  /* Secondary tiles */
+  .cm-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+
+  .cm-tile {
+    background: var(--paper-card);
+    padding: 1rem 1.125rem 1.125rem;
+    transition: background 0.15s;
+  }
+
+  .cm-tile:hover { background: var(--paper-warm); }
+
+  .cm-tile-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    margin-bottom: 0.3rem;
+  }
+
+  .cm-tile-val {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    color: var(--ink);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .cm-tile-val.sage    { color: var(--sage); }
+  .cm-tile-val.warning { color: var(--terra); }
+
+  /* Comparison card */
+  .cm-compare {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+
+  .cm-compare-head {
+    padding: 1.125rem 1.5rem 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cm-compare-title {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+  }
+
+  .cm-compare-note {
+    font-size: 0.6875rem;
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  .cm-chart-wrap {
+    padding: 0.625rem 1.5rem 0.25rem;
+  }
+
+  .cm-chart-wrap svg { width: 100%; display: block; }
+
+  /* Savings row */
+  .cm-savings {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border-top: 1px solid var(--rule);
+  }
+
+  .cm-saving {
+    background: var(--paper-card);
+    padding: 1rem 1rem 1.125rem;
+    text-align: center;
+    transition: background 0.15s;
+  }
+
+  .cm-saving:hover { background: var(--paper-warm); }
+
+  .cm-saving-val {
+    font-family: var(--serif);
+    font-size: 1.375rem;
+    color: var(--sage);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .cm-saving-val.zero     { color: var(--ink-faint); }
+  .cm-saving-val.negative { color: var(--terra); }
+
+  .cm-saving-label {
+    font-size: 0.5625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    font-weight: 700;
+  }
+
+  /* Breakdown */
+  .cm-breakdown {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem 1.375rem;
+  }
+
+  .cm-bd-title {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin-bottom: 1.125rem;
+  }
+
+  .cm-bd-row {
+    display: grid;
+    grid-template-columns: 148px 1fr 72px;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .cm-bd-row:last-child { margin-bottom: 0; }
+
+  .cm-bd-label {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  .cm-bd-track {
+    height: 5px;
+    background: var(--paper-warm);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .cm-bd-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .cm-bd-fill.f-new      { background: var(--terra); }
+  .cm-bd-fill.f-reuse    { background: var(--sage-light); }
+  .cm-bd-fill.f-freight  { background: var(--terra-light); }
+  .cm-bd-fill.f-design   { background: var(--ink-faint); }
+  .cm-bd-fill.f-conting  { background: var(--rule); outline: 1px solid var(--ink-faint); }
+
+  .cm-bd-val {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--ink-muted);
+    text-align: right;
+  }
+
+  /* Responsive */
+  @media (max-width: 1020px) {
+    .cm-layout { grid-template-columns: 1fr; }
+    .cm-inputs  { position: static; }
+  }
+
+  @media (max-width: 640px) {
+    .cm-tile-grid   { grid-template-columns: 1fr 1fr; }
+    .cm-savings     { grid-template-columns: 1fr; }
+    .cm-bd-row      { grid-template-columns: 120px 1fr 68px; }
+  }
+
+  /* ─────────────────────────────────────────────────
+     SUSTAINABILITY TAB
+  ───────────────────────────────────────────────── */
+
+  .eco-header {
+    padding: 3.5rem 0 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .eco-header .hero-eyebrow { margin-bottom: 0.5rem; }
+  .eco-header h2 { color: var(--ink); }
+
+  .eco-header-sub {
+    margin-top: 0.625rem;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--ink-muted);
+    max-width: 52rem;
+    line-height: 1.55;
+  }
+
+  /* ── Mode toggle ── */
+  .eco-toggle-row {
+    padding: 2rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .eco-toggle {
+    display: flex;
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 4px;
+    gap: 3px;
+    box-shadow: var(--shadow);
+  }
+
+  .eco-mode-btn {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    padding: 0.75rem 2.25rem;
+    font-family: var(--sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .eco-mode-btn .eco-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.35;
+    flex-shrink: 0;
+    transition: opacity 0.25s, background 0.25s;
+  }
+
+  .eco-mode-btn:hover { color: var(--ink); }
+
+  .eco-mode-btn.active[data-eco="new"] {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 0 2px 6px rgba(26,23,20,0.2);
+  }
+
+  .eco-mode-btn.active[data-eco="new"] .eco-dot {
+    opacity: 0.8;
+    background: var(--terra-light);
+  }
+
+  .eco-mode-btn.active[data-eco="reuse"] {
+    background: var(--sage);
+    color: white;
+    box-shadow: 0 2px 6px rgba(78,125,94,0.28);
+  }
+
+  .eco-mode-btn.active[data-eco="reuse"] .eco-dot {
+    opacity: 1;
+    background: #a8d4b4;
+  }
+
+  .eco-mode-caption {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    transition: color 0.25s;
+  }
+
+  .eco-mode-caption.reuse-active { color: var(--sage); }
+
+  /* ── KPI tiles ── */
+  .eco-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+
+  .eco-kpi {
+    background: var(--paper-card);
+    padding: 1.375rem 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    position: relative;
+    transition: background 0.25s;
+    overflow: hidden;
+  }
+
+  .eco-kpi::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2.5px;
+    background: var(--sage);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s ease;
+  }
+
+  .eco-kpi.lit::after { transform: scaleX(1); }
+
+  .eco-kpi-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0.25rem;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .eco-kpi-icon.sage  { background: var(--sage-pale);  color: var(--sage); }
+  .eco-kpi-icon.terra { background: var(--terra-pale); color: var(--terra); }
+
+  .eco-kpi-num {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .eco-kpi-unit {
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-left: 0.15rem;
+  }
+
+  .eco-kpi-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    margin-top: 0.125rem;
+  }
+
+  .eco-kpi-delta {
+    margin-top: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.225rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    align-self: flex-start;
+    letter-spacing: 0.03em;
+    transition: background 0.3s, color 0.3s;
+    white-space: nowrap;
+  }
+
+  .eco-kpi-delta.sage  { background: var(--sage-pale);  color: var(--sage); }
+  .eco-kpi-delta.terra { background: var(--terra-pale); color: var(--terra); }
+
+  /* LCA ring */
+  .eco-lca-ring {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 36px; height: 36px;
+    opacity: 0.8;
+  }
+
+  /* ── Charts row ── */
+  .eco-charts {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .eco-chart-card {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+
+  .eco-chart-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .eco-chart-title {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--ink-faint);
+  }
+
+  .eco-chart-total {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .eco-chart-card svg { width: 100%; display: block; }
+
+  /* Donut layout */
+  .eco-donut-layout {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .eco-donut-svg { flex-shrink: 0; width: 160px; height: 160px; }
+
+  .eco-donut-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .eco-leg-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .eco-leg-swatch {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .eco-leg-name {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    flex: 1;
+  }
+
+  .eco-leg-pct {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink);
+    min-width: 38px;
+    text-align: right;
+    transition: color 0.3s;
+  }
+
+  /* ── SDG section ── */
+  .eco-sdg-section { margin-bottom: 2rem; }
+
+  .eco-sdg-eyebrow {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--ink-faint);
+    margin-bottom: 1rem;
+  }
+
+  .eco-sdg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .eco-sdg-card {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--paper-card);
+  }
+
+  .eco-sdg-top {
+    padding: 0.875rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+
+  .eco-sdg-num {
+    width: 36px; height: 36px;
+    border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    line-height: 1;
+    font-family: var(--sans);
+  }
+
+  .eco-sdg-name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+    padding-top: 0.1rem;
+  }
+
+  .eco-sdg-body {
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .eco-sdg-body p {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1080px) {
+    .eco-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .eco-sdg-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 780px) {
+    .eco-charts { grid-template-columns: 1fr; }
+    .eco-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .eco-donut-layout { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 480px) {
+    .eco-sdg-grid { grid-template-columns: 1fr; }
+    .eco-mode-btn { padding: 0.625rem 1.25rem; font-size: 0.875rem; }
+  }
+
+  /* ══════════════════════════════════════
+     TAB 5 — COLLABORATION
+  ══════════════════════════════════════ */
+  .collab-header {
+    padding: 3.5rem 0 2.25rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 2.5rem;
+  }
+  .collab-header .hero-eyebrow { margin-bottom: 0.5rem; }
+  .collab-header h2 { color: var(--ink); margin-bottom: 0.5rem; }
+  .collab-header-sub {
+    color: var(--ink-muted);
+    font-size: 0.9375rem;
+    max-width: 640px;
+  }
+
+  /* City grid */
+  .collab-cities {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .city-card {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .city-card-head {
+    padding: 1.125rem 1.25rem 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .city-flag {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.625rem;
+  }
+  .city-flag-icon {
+    width: 28px;
+    height: 20px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .collab-city-name {
+    font-family: var(--serif);
+    font-size: 1.125rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .city-clock {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .city-time {
+    font-family: var(--mono);
+    font-size: 1.375rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .city-tz {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .city-card-body { padding: 1rem 1.25rem 1.25rem; }
+  .city-roles-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.625rem;
+  }
+  .city-role {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid var(--paper-warm);
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+    line-height: 1.3;
+  }
+  .city-role:last-child { border-bottom: none; }
+  .city-role-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terra-light);
+    flex-shrink: 0;
+    margin-top: 0.3125rem;
+  }
+  .city-role-dot.shared { background: var(--sage-light); }
+
+  /* Shared roles banner */
+  .collab-shared {
+    background: var(--sage-pale);
+    border: 1px solid var(--sage-light);
+    border-radius: var(--radius);
+    padding: 1rem 1.375rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .collab-shared-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage);
+    white-space: nowrap;
+  }
+  .collab-shared-roles {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+  .collab-shared-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: white;
+    border: 1px solid var(--sage-light);
+    border-radius: 20px;
+    padding: 0.3125rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--sage);
+    font-weight: 500;
+  }
+  .collab-shared-pill svg { flex-shrink: 0; }
+
+  /* RACI section */
+  .raci-section { margin-bottom: 3rem; }
+  .raci-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .raci-section-title {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    color: var(--ink);
+  }
+  .raci-legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .raci-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+  }
+  .raci-legend-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+  .raci-legend-badge.r { background: var(--terra-pale); color: var(--terra); }
+  .raci-legend-badge.a { background: #fbe9e0; color: #a0432a; border: 1px solid var(--terra-light); }
+  .raci-legend-badge.c { background: var(--paper-warm); color: var(--ink-muted); }
+  .raci-legend-badge.i { background: var(--paper); color: var(--ink-faint); border: 1px solid var(--rule); }
+
+  .raci-table-wrap {
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .raci-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .raci-table thead tr {
+    background: var(--paper-warm);
+    border-bottom: 2px solid var(--rule);
+  }
+  .raci-table thead th {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .raci-table thead th:not(:first-child) { text-align: center; }
+  .raci-table thead th.th-city { color: var(--ink); }
+  .raci-table thead .th-shared { color: var(--sage); }
+  .raci-table tbody tr {
+    border-bottom: 1px solid var(--rule);
+    transition: background 0.15s;
+  }
+  .raci-table tbody tr:last-child { border-bottom: none; }
+  .raci-table tbody tr:hover { background: var(--paper-warm); }
+  .raci-table td {
+    padding: 0.8125rem 1rem;
+    vertical-align: middle;
+  }
+  .raci-table td:not(:first-child) { text-align: center; }
+  .td-phase {
+    color: var(--ink);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .td-phase-sub {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    font-weight: normal;
+    display: block;
+    margin-top: 0.125rem;
+  }
+  .raci-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: 0;
+  }
+  .raci-badge.r { background: var(--terra-pale); color: var(--terra); }
+  .raci-badge.a { background: #fbe9e0; color: #a0432a; outline: 1.5px solid var(--terra-light); outline-offset: -1px; }
+  .raci-badge.c { background: var(--paper-warm); color: var(--ink-muted); }
+  .raci-badge.i { background: transparent; color: var(--ink-faint); }
+
+  .raci-callout {
+    margin-top: 1rem;
+    padding: 0.875rem 1.125rem;
+    background: var(--paper-warm);
+    border-left: 3px solid var(--terra-light);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+  }
+
+  /* Clock blinking colon */
+  @keyframes blinkColon {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+  .clock-colon { animation: blinkColon 1s step-start infinite; }
+
+  @media (max-width: 900px) {
+    .collab-cities { grid-template-columns: 1fr; }
+    .raci-table { font-size: 0.8125rem; }
+    .raci-table td, .raci-table th { padding: 0.625rem 0.625rem; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .header-inner { gap: 1rem; overflow-x: auto; }
+    .nav-tab { padding: 0 0.75rem; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .tour-route { flex-direction: column; }
+    .tour-city:not(:first-child) { border-left: 1px solid var(--rule); border-top: none; }
+    .tour-city:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+    .tour-city:last-child  { border-radius: 0 0 var(--radius) var(--radius); }
+    main { padding: 0 1rem 4rem; }
+    .hero { padding: 3rem 0 2.5rem; }
+  }
+
+  /* ══════════════════════════════════════
+     POLISH PASS — visual consistency
+  ══════════════════════════════════════ */
+
+  /* Global focus ring (keyboard only) */
+  :focus-visible {
+    outline: 2px solid var(--terra);
+    outline-offset: 2px;
+    border-radius: var(--radius);
+  }
+
+  /* Hover lift on all card types */
+  .metric-tile, .cm-tile, .cm-saving, .eco-sdg-card, .city-card, .pm-callout, .eco-kpi, .eco-chart-card {
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  .eco-sdg-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--rule);
+  }
+
+  .city-card:hover {
+    border-color: var(--terra-light);
+    box-shadow: var(--shadow);
+  }
+
+  .pm-callout:hover {
+    background: var(--paper-warm);
+    box-shadow: 0 2px 8px rgba(26,23,20,0.06);
+  }
+
+  /* Consistent border-radius on all cards */
+  .eco-sdg-card, .eco-chart-card, .eco-kpi-grid, .raci-table-wrap,
+  .collab-shared, .city-card, .cm-breakdown, .cm-compare {
+    border-radius: var(--radius);
+  }
+
+  /* ── Site footer ── */
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    background: var(--paper-warm);
+    padding: 1.25rem 2rem;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-credits {
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+  }
+
+  .footer-credits strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .footer-note {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 600px) {
+    .footer-inner { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Site Header ── -->
+<header id="site-header">
+  <div class="header-inner">
+    <a class="wordmark" href="#">
+      <div class="wordmark-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="1" y="1" width="5" height="5" fill="white" opacity="0.9"/>
+          <rect x="8" y="1" width="5" height="5" fill="white" opacity="0.5"/>
+          <rect x="1" y="8" width="5" height="5" fill="white" opacity="0.5"/>
+          <rect x="8" y="8" width="5" height="5" fill="white" opacity="0.9"/>
+        </svg>
+      </div>
+      <div class="wordmark-text">
+        Exhibition DevOS<br>
+        <span>ECHO Case Study</span>
+      </div>
+    </a>
+    <nav id="main-nav" role="tablist" aria-label="Exhibition DevOS sections">
+      <button class="nav-tab active" role="tab" id="tab-overview"       tabindex="0"  aria-selected="true"  aria-controls="panel-overview"       data-panel="overview">Overview</button>
+      <button class="nav-tab" role="tab" id="tab-process"        tabindex="-1" aria-selected="false" aria-controls="panel-process"        data-panel="process">Process Mapper</button>
+      <button class="nav-tab" role="tab" id="tab-costing"        tabindex="-1" aria-selected="false" aria-controls="panel-costing"        data-panel="costing">Costing Model</button>
+      <button class="nav-tab" role="tab" id="tab-sustainability" tabindex="-1" aria-selected="false" aria-controls="panel-sustainability" data-panel="sustainability">Sustainability</button>
+      <button class="nav-tab" role="tab" id="tab-collaboration"  tabindex="-1" aria-selected="false" aria-controls="panel-collaboration"  data-panel="collaboration">Collaboration</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ── Main Content ── -->
+<main>
+
+  <!-- ══════════════════════════════════════════
+       TAB 1 — OVERVIEW
+  ══════════════════════════════════════════ -->
+  <section class="tab-panel active" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-body">
+        <p class="hero-eyebrow">KTP Research Prototype · Exhibition Development OS</p>
+        <h1 class="hero-title">ECHO: Memory in the<br>Age of Machines</h1>
+        <p class="hero-subtitle">
+          How reframing a touring exhibition around digital-first, media-led production
+          cuts costs, carbon, and lead-time while increasing reach and reuse.
+        </p>
+      </div>
+      <div class="hero-meta">
+        <span class="hero-badge">Prototype · 2025</span>
+        <span class="hero-date">3-City International Tour</span>
+      </div>
+    </div>
+
+    <!-- Tour Route -->
+    <div class="tour-section">
+      <p class="section-label">Tour Route</p>
+      <div class="tour-route">
+        <div class="tour-city">
+          <div class="city-tag origin"></div>
+          <div class="city-number">Leg 01</div>
+          <div class="city-name">London</div>
+          <div class="city-venue">The Barbican Centre</div>
+          <div class="city-dates">Mar – Jun 2026 &nbsp;·&nbsp; 14 weeks</div>
+        </div>
+        <div class="tour-city">
+          <div class="city-tag leg2"></div>
+          <div class="city-number">Leg 02</div>
+          <div class="city-name">Dubai</div>
+          <div class="city-venue">Jameel Arts Centre</div>
+          <div class="city-dates">Sep – Nov 2026 &nbsp;·&nbsp; 10 weeks</div>
+        </div>
+        <div class="tour-city">
+          <div class="city-tag leg3"></div>
+          <div class="city-number">Leg 03</div>
+          <div class="city-name">Riyadh</div>
+          <div class="city-venue">JAX District, Diriyah</div>
+          <div class="city-dates">Feb – Apr 2027 &nbsp;·&nbsp; 10 weeks</div>
+        </div>
+      </div>
+
+      <!-- SVG Route Map -->
+      <div class="route-map-wrap">
+        <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;display:block;background:#f5f2ec;">
+
+          <!-- subtle grid -->
+          <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ddd8cf" stroke-width="0.5"/>
+            </pattern>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#c4603a" opacity="0.7"/>
+            </marker>
+          </defs>
+          <rect width="900" height="240" fill="url(#grid)"/>
+
+          <!-- Simplified world outline strips (decorative) -->
+          <!-- Europe blob -->
+          <ellipse cx="310" cy="105" rx="55" ry="35" fill="#ddd8cf" opacity="0.4"/>
+          <!-- Middle East blob -->
+          <ellipse cx="580" cy="130" rx="65" ry="30" fill="#ddd8cf" opacity="0.4"/>
+          <!-- Africa blob -->
+          <ellipse cx="360" cy="175" rx="45" ry="40" fill="#ddd8cf" opacity="0.3"/>
+          <!-- India subcontinent -->
+          <ellipse cx="680" cy="145" rx="30" ry="25" fill="#ddd8cf" opacity="0.3"/>
+
+          <!-- Route arc: London → Dubai -->
+          <path d="M 315 98 C 400 55, 490 65, 565 118"
+                fill="none" stroke="#c4603a" stroke-width="1.5"
+                stroke-dasharray="5 3" marker-end="url(#arrow)" opacity="0.75"/>
+
+          <!-- Route arc: Dubai → Riyadh -->
+          <path d="M 575 120 C 600 108, 620 108, 640 118"
+                fill="none" stroke="#c4603a" stroke-width="1.5"
+                stroke-dasharray="5 3" marker-end="url(#arrow)" opacity="0.75"/>
+
+          <!-- City: London -->
+          <circle cx="312" cy="98" r="6" fill="#c4603a"/>
+          <circle cx="312" cy="98" r="12" fill="#c4603a" opacity="0.15"/>
+          <text x="312" y="80" text-anchor="middle"
+                font-family="Georgia, serif" font-size="11" fill="#1a1714">London</text>
+          <text x="312" y="92" text-anchor="middle"
+                font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                fill="#9a9189" letter-spacing="0.04em">LEG 01</text>
+
+          <!-- City: Dubai -->
+          <circle cx="572" cy="121" r="6" fill="#e8987c"/>
+          <circle cx="572" cy="121" r="12" fill="#e8987c" opacity="0.15"/>
+          <text x="572" y="103" text-anchor="middle"
+                font-family="Georgia, serif" font-size="11" fill="#1a1714">Dubai</text>
+          <text x="572" y="115" text-anchor="middle"
+                font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                fill="#9a9189" letter-spacing="0.04em">LEG 02</text>
+
+          <!-- City: Riyadh -->
+          <circle cx="648" cy="122" r="6" fill="#f5e0d8" stroke="#e8987c" stroke-width="1.5"/>
+          <circle cx="648" cy="122" r="12" fill="#e8987c" opacity="0.1"/>
+          <text x="648" y="104" text-anchor="middle"
+                font-family="Georgia, serif" font-size="11" fill="#1a1714">Riyadh</text>
+          <text x="648" y="116" text-anchor="middle"
+                font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                fill="#9a9189" letter-spacing="0.04em">LEG 03</text>
+
+          <!-- Distance labels -->
+          <text x="435" y="62" text-anchor="middle"
+                font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                fill="#c4603a" opacity="0.8" letter-spacing="0.05em">5,490 km</text>
+          <text x="607" y="102" text-anchor="middle"
+                font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                fill="#c4603a" opacity="0.8" letter-spacing="0.05em">876 km</text>
+
+          <!-- Legend -->
+          <line x1="30" y1="210" x2="60" y2="210" stroke="#c4603a" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="68" y="214" font-family="Helvetica Neue, Arial, sans-serif"
+                font-size="8" fill="#9a9189" letter-spacing="0.06em">TOUR ROUTE</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Metric Tiles -->
+    <div class="metrics-section">
+      <p class="section-label">Headline Outcomes — Digital-First Model vs. Conventional</p>
+      <div class="metrics-grid">
+
+        <!-- Tile 1: Budget -->
+        <div class="metric-tile">
+          <div class="metric-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="metric-value"><span id="ov-budget">£2.9</span><sup>m</sup></div>
+          <div class="metric-label">Total Production Budget</div>
+          <div class="metric-delta">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 3h8z" transform="rotate(180,5,5)"/></svg>
+            38% below benchmark
+          </div>
+          <p class="metric-desc">Media-first design reduces physical build cost by shifting spend to reusable digital assets and modular structures.</p>
+        </div>
+
+        <!-- Tile 2: Carbon saved -->
+        <div class="metric-tile">
+          <div class="metric-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="metric-value">38<sup>t</sup></div>
+          <div class="metric-label">CO₂e Saved</div>
+          <div class="metric-delta">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 3h8z" transform="rotate(180,5,5)"/></svg>
+            vs. conventional tour
+          </div>
+          <p class="metric-desc">Lighter freight, reduced physical fabrication, and local material sourcing across all three venues.</p>
+        </div>
+
+        <!-- Tile 3: Time saved -->
+        <div class="metric-tile">
+          <div class="metric-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="metric-value">11<sup>wk</sup></div>
+          <div class="metric-label">Lead-Time Reduction</div>
+          <div class="metric-delta">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 3h8z" transform="rotate(180,5,5)"/></svg>
+            From 52 → 41 weeks
+          </div>
+          <p class="metric-desc">Digital-first workflows and cloud collaboration compress the design-to-delivery pipeline significantly.</p>
+        </div>
+
+        <!-- Tile 4: Material reuse -->
+        <div class="metric-tile">
+          <div class="metric-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </div>
+          <div class="metric-value"><span id="ov-reuse">60</span><sup>%</sup></div>
+          <div class="metric-label">Material Reuse Rate</div>
+          <div class="metric-delta">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 3h8z" transform="rotate(180,5,5)"/></svg>
+            vs. 0% conventional build
+          </div>
+          <p class="metric-desc">Modular furniture, re-skinnable structures, and digital content libraries maximise cross-venue reuse.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Thesis Strip -->
+    <div class="thesis-strip">
+      <blockquote>
+        "The most sustainable exhibition is one that travels light, thinks in media,
+        and leaves behind knowledge — not waste. ECHO demonstrates that the entire
+        production paradigm can be reinvented when digital collaboration is the
+        operating system, not an afterthought."
+        <cite>— Exhibition Development OS &nbsp;·&nbsp; KTP Prototype, 2025</cite>
+      </blockquote>
+      <div class="strip-aside">
+        <div class="kpi-big">3×</div>
+        <p>Venues from<br>one production</p>
+      </div>
+    </div>
+
+  </section><!-- /overview -->
+
+
+  <!-- ══════════════════════════════════════════
+       TAB 2 — PROCESS MAPPER
+  ══════════════════════════════════════════ -->
+  <section class="tab-panel" id="panel-process" role="tabpanel" aria-labelledby="tab-process">
+
+    <!-- Header + toggle -->
+    <div class="pm-header">
+      <div class="pm-header-text">
+        <p class="hero-eyebrow">Process Mapper</p>
+        <h2>How the production model changes</h2>
+      </div>
+      <div class="model-toggle" role="group" aria-label="Select model view">
+        <button class="model-btn active" data-model="linear">Current: Linear model</button>
+        <button class="model-btn" data-model="mediacentric">Proposed: Media-centric model</button>
+      </div>
+    </div>
+
+    <div class="pm-view-wrap" id="pm-view-wrap">
+
+      <!-- ─────────────────────────────────────
+           VIEW 1 — LINEAR MODEL
+      ───────────────────────────────────── -->
+      <div class="pm-view active" id="pm-view-linear">
+
+        <div class="pm-diagram">
+          <!--
+            8 phases in a left-to-right chain.
+            Box: w=100, h=38, rx=3. Step=117. Centers y=49.
+            viewBox: 938 × 98. Pain markers ①②③ above relevant phases.
+          -->
+          <svg viewBox="0 0 938 98" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="lin-arr" markerWidth="7" markerHeight="7"
+                      refX="5.5" refY="3.5" orient="auto">
+                <path d="M0,0.5 L6,3.5 L0,6.5 Z" fill="#c4603a" opacity="0.85"/>
+              </marker>
+            </defs>
+
+            <!-- ── Phase boxes ── -->
+            <!-- Phase 1: Concept -->
+            <rect x="2"   y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="52"  y="53" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Concept</text>
+
+            <!-- Phase 2: Curatorial Research -->
+            <rect x="119" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="169" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">Curatorial</text>
+            <text x="169" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">Research</text>
+
+            <!-- Phase 3: Interpretation / Content   ← pain marker ① -->
+            <rect x="236" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="286" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">Interpretation</text>
+            <text x="286" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">/ Content</text>
+            <!-- ① marker -->
+            <circle cx="286" cy="18" r="8" fill="#c4603a" opacity="0.18"/>
+            <circle cx="286" cy="18" r="6" fill="none" stroke="#c4603a" stroke-width="1.2"/>
+            <text x="286" y="22" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="8" font-weight="700" fill="#c4603a">1</text>
+
+            <!-- Phase 4: Design -->
+            <rect x="353" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="403" y="53" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Design</text>
+
+            <!-- Phase 5: Fabrication   ← pain marker ② -->
+            <rect x="470" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="520" y="53" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Fabrication</text>
+            <circle cx="520" cy="18" r="8" fill="#c4603a" opacity="0.18"/>
+            <circle cx="520" cy="18" r="6" fill="none" stroke="#c4603a" stroke-width="1.2"/>
+            <text x="520" y="22" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="8" font-weight="700" fill="#c4603a">2</text>
+
+            <!-- Phase 6: Freight & Install -->
+            <rect x="587" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="637" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">Freight &amp;</text>
+            <text x="637" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">Install</text>
+
+            <!-- Phase 7: Open -->
+            <rect x="704" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="754" y="53" text-anchor="middle" font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Open</text>
+
+            <!-- Phase 8: Evaluate & Strike   ← pain marker ③ -->
+            <rect x="821" y="30" width="100" height="38" rx="3" fill="#edeae4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="871" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">Evaluate</text>
+            <text x="871" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#1a1714">&amp; Strike</text>
+            <circle cx="871" cy="18" r="8" fill="#c4603a" opacity="0.18"/>
+            <circle cx="871" cy="18" r="6" fill="none" stroke="#c4603a" stroke-width="1.2"/>
+            <text x="871" y="22" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="8" font-weight="700" fill="#c4603a">3</text>
+
+            <!-- ── Connecting arrows ── -->
+            <line x1="102" y1="49" x2="119" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+            <line x1="219" y1="49" x2="236" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+            <line x1="336" y1="49" x2="353" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+            <line x1="453" y1="49" x2="470" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+            <line x1="570" y1="49" x2="587" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+            <line x1="687" y1="49" x2="704" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+            <line x1="804" y1="49" x2="821" y2="49" stroke="#c4603a" stroke-width="1.5" marker-end="url(#lin-arr)"/>
+
+            <!-- ── Phase index labels (bottom) ── -->
+            <text x="52"  y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">01</text>
+            <text x="169" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">02</text>
+            <text x="286" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">03</text>
+            <text x="403" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">04</text>
+            <text x="520" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">05</text>
+            <text x="637" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">06</text>
+            <text x="754" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">07</text>
+            <text x="871" y="89" text-anchor="middle" font-family="Courier New, monospace" font-size="7" fill="#b5ada4" letter-spacing="0.06em">08</text>
+          </svg>
+        </div><!-- /pm-diagram -->
+
+        <!-- Pain point callouts -->
+        <div class="pm-callouts">
+          <div class="pm-callout pain">
+            <div class="pm-callout-tag">① Phase 03 → 04 &nbsp;·&nbsp; Interpretation to Design</div>
+            <p>Content is locked late in the process, forcing expensive design rework and compressing the build schedule downstream.</p>
+          </div>
+          <div class="pm-callout pain">
+            <div class="pm-callout-tag">② Phase 05 &nbsp;·&nbsp; Fabrication</div>
+            <p>Physical structures are built from scratch for each venue. No modularity means high cost, long lead times, and material waste.</p>
+          </div>
+          <div class="pm-callout pain">
+            <div class="pm-callout-tag">③ Phase 08 &nbsp;·&nbsp; Evaluate &amp; Strike</div>
+            <p>Evaluation only happens after the show closes — too late to improve the visitor experience or feed learning back into the tour.</p>
+          </div>
+        </div>
+
+        <div class="pm-caption">
+          <p>The traditional model is strictly sequential and single-use: each phase waits for the previous one to complete, knowledge is siloed, and most physical build is discarded after each venue.</p>
+        </div>
+
+      </div><!-- /pm-view-linear -->
+
+
+      <!-- ─────────────────────────────────────
+           VIEW 2 — MEDIA-CENTRIC MODEL
+      ───────────────────────────────────── -->
+      <div class="pm-view" id="pm-view-mediacentric">
+
+        <div class="pm-diagram">
+          <!--
+            Hub-and-spoke layout.
+            Hub ellipse at (480, 232), rx=82, ry=56.
+            Left column phases feed IN (bidirectional arrows).
+            Right column phases flow OUT from hub.
+            Bottom phases: Open + Evaluate & Strike (with feedback loop).
+            Sage-green capability badges on key connections.
+          -->
+          <svg viewBox="0 0 960 488" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Terracotta forward arrow -->
+              <marker id="hub-arr" markerWidth="7" markerHeight="7"
+                      refX="5.5" refY="3.5" orient="auto">
+                <path d="M0,0.5 L6,3.5 L0,6.5 Z" fill="#c4603a" opacity="0.8"/>
+              </marker>
+              <!-- Terracotta reverse arrow (auto-start-reverse) -->
+              <marker id="hub-arr-rev" markerWidth="7" markerHeight="7"
+                      refX="1.5" refY="3.5" orient="auto-start-reverse">
+                <path d="M0,0.5 L6,3.5 L0,6.5 Z" fill="#c4603a" opacity="0.5"/>
+              </marker>
+              <!-- Sage feedback loop arrow -->
+              <marker id="loop-arr" markerWidth="7" markerHeight="7"
+                      refX="5.5" refY="3.5" orient="auto">
+                <path d="M0,0.5 L6,3.5 L0,6.5 Z" fill="#4e7d5e" opacity="0.9"/>
+              </marker>
+            </defs>
+
+            <!-- ════════════════════════════
+                 CONNECTIONS (drawn first so boxes sit on top)
+            ════════════════════════════ -->
+
+            <!-- ── Left side: bidirectional (content ↔ hub) ── -->
+
+            <!-- Concept ↔ Hub -->
+            <path d="M 198 87 C 290 87, 350 158, 410 206"
+                  fill="none" stroke="#c4603a" stroke-width="1.3" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+            <path d="M 406 214 C 345 166, 284 96, 192 96"
+                  fill="none" stroke="#c4603a" stroke-width="1" stroke-dasharray="4 3"
+                  opacity="0.45" marker-end="url(#hub-arr)"/>
+
+            <!-- Curatorial Research ↔ Hub (horizontal, two offset lines) -->
+            <line x1="198" y1="228" x2="398" y2="228"
+                  stroke="#c4603a" stroke-width="1.3" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+            <line x1="398" y1="236" x2="198" y2="236"
+                  stroke="#c4603a" stroke-width="1" stroke-dasharray="4 3"
+                  opacity="0.45" marker-end="url(#hub-arr)"/>
+
+            <!-- Interpretation / Content ↔ Hub -->
+            <path d="M 198 373 C 290 373, 350 302, 410 258"
+                  fill="none" stroke="#c4603a" stroke-width="1.3" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+            <path d="M 406 250 C 345 298, 284 364, 192 372"
+                  fill="none" stroke="#c4603a" stroke-width="1" stroke-dasharray="4 3"
+                  opacity="0.45" marker-end="url(#hub-arr)"/>
+
+            <!-- ── Right side: hub → phase (one-way) ── -->
+
+            <!-- Hub → Design -->
+            <path d="M 550 206 C 620 158, 700 104, 762 90"
+                  fill="none" stroke="#c4603a" stroke-width="1.4" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+
+            <!-- Hub → Fabrication (horizontal) -->
+            <line x1="562" y1="232" x2="762" y2="232"
+                  stroke="#c4603a" stroke-width="1.4" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+
+            <!-- Hub → Freight & Install -->
+            <path d="M 550 258 C 620 306, 700 360, 762 374"
+                  fill="none" stroke="#c4603a" stroke-width="1.4" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+
+            <!-- ── Bottom: hub → Open & E&S ── -->
+            <path d="M 444 286 C 410 340, 376 388, 348 431"
+                  fill="none" stroke="#c4603a" stroke-width="1.4" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+
+            <path d="M 516 286 C 548 340, 576 388, 606 431"
+                  fill="none" stroke="#c4603a" stroke-width="1.4" opacity="0.7"
+                  marker-end="url(#hub-arr)"/>
+
+            <!-- ── Feedback loop: Evaluate & Strike → Hub (sage, dashed) ── -->
+            <path d="M 680 450 C 800 450, 812 180, 558 218"
+                  fill="none" stroke="#4e7d5e" stroke-width="1.6"
+                  stroke-dasharray="6 4" opacity="0.8"
+                  marker-end="url(#loop-arr)"/>
+            <!-- Loop label -->
+            <text x="778" y="306" text-anchor="middle"
+                  font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                  fill="#4e7d5e" opacity="0.85" letter-spacing="0.05em">feedback</text>
+            <text x="778" y="317" text-anchor="middle"
+                  font-family="Helvetica Neue, Arial, sans-serif" font-size="8"
+                  fill="#4e7d5e" opacity="0.85" letter-spacing="0.05em">loop</text>
+
+            <!-- ════════════════════════════
+                 CENTRAL HUB
+            ════════════════════════════ -->
+            <ellipse cx="480" cy="232" rx="82" ry="56"
+                     fill="#f5e0d8" stroke="#c4603a" stroke-width="1.75"/>
+            <ellipse cx="480" cy="232" rx="74" ry="49"
+                     fill="none" stroke="#c4603a" stroke-width="0.5" opacity="0.3"/>
+            <text x="480" y="223" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="12" fill="#1a1714" font-weight="normal">Media &amp; Content</text>
+            <text x="480" y="239" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="13" fill="#1a1714" font-weight="normal"
+                  letter-spacing="-0.01em">Core</text>
+            <text x="480" y="254" text-anchor="middle"
+                  font-family="Helvetica Neue, Arial, sans-serif" font-size="7.5"
+                  fill="#c4603a" letter-spacing="0.1em" opacity="0.75">ALWAYS-ON</text>
+
+            <!-- ════════════════════════════
+                 LEFT PHASE BOXES
+            ════════════════════════════ -->
+            <!-- Concept -->
+            <rect x="86" y="70" width="112" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="142" y="93" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Concept</text>
+            <text x="86" y="66" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">01</text>
+
+            <!-- Curatorial Research -->
+            <rect x="86" y="213" width="112" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="142" y="229" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">Curatorial</text>
+            <text x="142" y="243" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">Research</text>
+            <text x="86" y="209" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">02</text>
+
+            <!-- Interpretation / Content -->
+            <rect x="86" y="355" width="112" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="142" y="371" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">Interpretation</text>
+            <text x="142" y="385" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">/ Content</text>
+            <text x="86" y="351" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">03</text>
+
+            <!-- ════════════════════════════
+                 RIGHT PHASE BOXES
+            ════════════════════════════ -->
+            <!-- Design -->
+            <rect x="762" y="70" width="112" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="818" y="93" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Design</text>
+            <text x="762" y="66" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">04</text>
+
+            <!-- Fabrication -->
+            <rect x="762" y="213" width="112" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="818" y="236" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Fabrication</text>
+            <text x="762" y="209" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">05</text>
+
+            <!-- Freight & Install -->
+            <rect x="762" y="355" width="112" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="818" y="371" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">Freight &amp;</text>
+            <text x="818" y="385" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">Install</text>
+            <text x="762" y="351" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">06</text>
+
+            <!-- ════════════════════════════
+                 BOTTOM PHASE BOXES
+            ════════════════════════════ -->
+            <!-- Open -->
+            <rect x="288" y="431" width="120" height="38" rx="3"
+                  fill="#faf8f4" stroke="#ccc7bd" stroke-width="1"/>
+            <text x="348" y="454" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10.5" fill="#1a1714">Open</text>
+            <text x="288" y="427" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">07</text>
+
+            <!-- Evaluate & Strike -->
+            <rect x="548" y="431" width="132" height="38" rx="3"
+                  fill="#faf8f4" stroke="#4e7d5e" stroke-width="1.2"/>
+            <text x="614" y="447" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">Evaluate</text>
+            <text x="614" y="461" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="10" fill="#1a1714">&amp; Strike</text>
+            <text x="548" y="427" font-family="Courier New, monospace" font-size="7"
+                  fill="#b5ada4" letter-spacing="0.06em">08</text>
+
+            <!-- ════════════════════════════
+                 CAPABILITY BADGES (sage green)
+            ════════════════════════════ -->
+
+            <!-- Badge A: Participatory & community input — on Curatorial ↔ Hub path -->
+            <rect x="228" y="198" width="146" height="21" rx="3"
+                  fill="#d8eee2" stroke="#4e7d5e" stroke-width="1"/>
+            <circle cx="241" cy="208.5" r="3.5" fill="#4e7d5e"/>
+            <text x="252" y="213" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="8.5" fill="#2e5c3e" font-weight="600" letter-spacing="0.02em">Participatory &amp; community input</text>
+
+            <!-- Badge B: Reusable / modular build — near Fabrication ↔ Hub path -->
+            <rect x="588" y="198" width="130" height="21" rx="3"
+                  fill="#d8eee2" stroke="#4e7d5e" stroke-width="1"/>
+            <circle cx="601" cy="208.5" r="3.5" fill="#4e7d5e"/>
+            <text x="612" y="213" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="8.5" fill="#2e5c3e" font-weight="600" letter-spacing="0.02em">Reusable / modular build</text>
+
+            <!-- Badge C: Digital collaboration across cities — between Open and E&S -->
+            <rect x="358" y="399" width="200" height="21" rx="3"
+                  fill="#d8eee2" stroke="#4e7d5e" stroke-width="1"/>
+            <circle cx="371" cy="409.5" r="3.5" fill="#4e7d5e"/>
+            <text x="382" y="414" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="8.5" fill="#2e5c3e" font-weight="600" letter-spacing="0.02em">Digital collaboration across cities</text>
+
+            <!-- ════════════════════════════
+                 LEGEND
+            ════════════════════════════ -->
+            <rect x="18" y="450" width="220" height="30" rx="3"
+                  fill="#faf8f4" stroke="#ddd8cf" stroke-width="0.75" opacity="0.95"/>
+            <!-- solid forward -->
+            <line x1="28" y1="461" x2="48" y2="461" stroke="#c4603a" stroke-width="1.3"
+                  marker-end="url(#hub-arr)"/>
+            <text x="53" y="465" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="7.5" fill="#9a9189">Process flow</text>
+            <!-- dashed reverse -->
+            <line x1="28" y1="472" x2="48" y2="472" stroke="#c4603a" stroke-width="1"
+                  stroke-dasharray="4 3" marker-end="url(#hub-arr)"/>
+            <text x="53" y="476" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="7.5" fill="#9a9189">Feedback / iterative</text>
+            <!-- sage feedback -->
+            <line x1="128" y1="461" x2="148" y2="461" stroke="#4e7d5e" stroke-width="1.5"
+                  stroke-dasharray="5 3" marker-end="url(#loop-arr)"/>
+            <text x="153" y="465" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="7.5" fill="#9a9189">Feedback loop</text>
+            <!-- sage badge dot -->
+            <circle cx="131" cy="472" r="3.5" fill="#d8eee2" stroke="#4e7d5e" stroke-width="0.8"/>
+            <text x="140" y="476" font-family="Helvetica Neue, Arial, sans-serif"
+                  font-size="7.5" fill="#9a9189">New capability</text>
+          </svg>
+        </div><!-- /pm-diagram -->
+
+        <!-- Capability callouts -->
+        <div class="pm-callouts">
+          <div class="pm-callout new">
+            <div class="pm-callout-tag">Participatory &amp; community input</div>
+            <p>Community voices and local knowledge enter the process early — at the curatorial stage — shaping interpretation rather than being an add-on.</p>
+          </div>
+          <div class="pm-callout new">
+            <div class="pm-callout-tag">Reusable / modular build</div>
+            <p>Physical structures are designed from the outset as adaptable, re-skinnable modules. The same core build travels across all three venues.</p>
+          </div>
+          <div class="pm-callout new">
+            <div class="pm-callout-tag">Digital collaboration across cities</div>
+            <p>London, Dubai, and Riyadh teams share a live cloud workspace, enabling simultaneous local adaptation without losing coherence.</p>
+          </div>
+        </div>
+
+        <div class="pm-caption">
+          <p>In the media-centric model, content and media sit at the core and are developed in parallel with all other phases. Physical elements are modular and reused across venues, community input feeds in early, and the three city teams collaborate digitally in real time — with structured feedback flowing back into the system after each opening.</p>
+        </div>
+
+      </div><!-- /pm-view-mediacentric -->
+
+    </div><!-- /pm-view-wrap -->
+
+  </section><!-- /process -->
+
+  <!-- ══════════════════════════════════════════
+       TAB 3 — COSTING MODEL
+  ══════════════════════════════════════════ -->
+  <section class="tab-panel" id="panel-costing" role="tabpanel" aria-labelledby="tab-costing">
+
+    <div class="cm-tab-header">
+      <p class="hero-eyebrow">Costing Model</p>
+      <h2>Parametric Budget Tool</h2>
+      <p>Adjust any parameter to see how the production economics shift in real time. The reuse lever is the key driver.</p>
+    </div>
+
+    <div class="cm-layout">
+
+      <!-- ───────────────── LEFT: INPUTS ───────────────── -->
+      <div class="cm-inputs">
+        <div class="cm-panel-label">Production Parameters</div>
+
+        <!-- 1. Floor area -->
+        <div class="cm-input-group">
+          <div class="cm-input-row">
+            <label class="cm-label" for="inp-area">Floor area per venue</label>
+            <span class="cm-val" id="val-area">1,200 m²</span>
+          </div>
+          <input type="range" class="cm-range" id="inp-area"
+                 min="600" max="2000" value="1200" step="50">
+          <div class="cm-range-ends"><span>600 m²</span><span>2,000 m²</span></div>
+        </div>
+
+        <!-- 2. Reuse split — KEY LEVER -->
+        <div class="cm-input-group key">
+          <div class="cm-input-row">
+            <label class="cm-label" for="inp-reuse">
+              Reuse / modular split
+              <span class="cm-key-badge">key lever</span>
+            </label>
+            <span class="cm-val" id="val-reuse">60% reused</span>
+          </div>
+          <input type="range" class="cm-range" id="inp-reuse"
+                 min="0" max="100" value="60" step="5">
+          <div class="cm-range-ends"><span>100% new build</span><span>100% reused</span></div>
+        </div>
+
+        <!-- 3. Venues -->
+        <div class="cm-input-group">
+          <div class="cm-input-row">
+            <label class="cm-label" for="inp-venues">Venues on tour</label>
+            <span class="cm-val" id="val-venues">3 venues</span>
+          </div>
+          <input type="range" class="cm-range" id="inp-venues"
+                 min="1" max="5" value="3" step="1">
+          <div class="cm-range-ends"><span>1</span><span>5</span></div>
+        </div>
+
+        <div class="cm-divider"></div>
+
+        <!-- 4. Freight -->
+        <div class="cm-input-group">
+          <div class="cm-input-row">
+            <label class="cm-label" for="inp-freight">Freight &amp; logistics per venue</label>
+            <span class="cm-val" id="val-freight">£120,000</span>
+          </div>
+          <input type="range" class="cm-range" id="inp-freight"
+                 min="40000" max="250000" value="120000" step="5000">
+          <div class="cm-range-ends"><span>£40k</span><span>£250k</span></div>
+        </div>
+
+        <!-- 5. Design fees -->
+        <div class="cm-input-group">
+          <div class="cm-input-row">
+            <label class="cm-label" for="inp-design">Design &amp; interpretation fees</label>
+            <span class="cm-val" id="val-design">£420,000</span>
+          </div>
+          <input type="range" class="cm-range" id="inp-design"
+                 min="150000" max="800000" value="420000" step="10000">
+          <div class="cm-range-ends"><span>£150k</span><span>£800k</span></div>
+        </div>
+
+        <!-- 6. Contingency -->
+        <div class="cm-input-group">
+          <div class="cm-input-row">
+            <label class="cm-label" for="inp-contingency">Contingency</label>
+            <span class="cm-val" id="val-contingency">12%</span>
+          </div>
+          <input type="range" class="cm-range" id="inp-contingency"
+                 min="5" max="20" value="12" step="1">
+          <div class="cm-range-ends"><span>5%</span><span>20%</span></div>
+        </div>
+
+        <div class="cm-divider"></div>
+
+        <!-- How calculated -->
+        <button class="cm-how-btn" id="cm-how-toggle">
+          <span>How this is calculated</span>
+          <svg class="cm-chev" width="11" height="11" viewBox="0 0 11 11"
+               fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+            <polyline points="2,4 5.5,7.5 9,4"/>
+          </svg>
+        </button>
+        <div class="cm-how-body" id="cm-how-body">
+          <p><strong>New-build fabrication:</strong> area × (1 − reuse%) × £950/m² × venues — full rebuild cost applies at every venue.</p>
+          <p><strong>Reusable / modular:</strong> area × reuse% × £280/m² paid once (initial build), then area × reuse% × £120/m² × venues (re-skin per venue).</p>
+          <p><strong>Freight:</strong> logistics input × venues.</p>
+          <p><strong>Design &amp; interpretation:</strong> charged once across the whole programme.</p>
+          <p><strong>Contingency:</strong> percentage applied on the sum of all above.</p>
+          <p><strong>Revenue:</strong> £1,600,000 per venue (admission, venue license &amp; touring premium) — stated and fixed for comparison purposes.</p>
+          <p><strong>Margin:</strong> (revenue − cost) ÷ revenue.</p>
+          <p><strong>Production time:</strong> a base lead-time (shortened by digital parallel working) + blended weeks per venue (10 wk new / 5 wk reuse) + 2-week freight buffer between venues.</p>
+        </div>
+      </div><!-- /cm-inputs -->
+
+      <!-- ───────────────── RIGHT: RESULTS ───────────────── -->
+      <div class="cm-results">
+
+        <!-- Total budget -->
+        <div class="cm-total-block">
+          <div class="cm-total-eyebrow">Total Programme Budget</div>
+          <div class="cm-total-value" id="res-total">£0</div>
+          <div class="cm-total-context">
+            <span id="res-revenue-ctx">vs. £0 revenue</span>
+            <span class="cm-margin-badge positive" id="res-margin-badge">0% margin</span>
+          </div>
+        </div>
+
+        <!-- Secondary tiles -->
+        <div class="cm-tile-grid">
+          <div class="cm-tile">
+            <div class="cm-tile-label">Cost per Venue</div>
+            <div class="cm-tile-val" id="res-per-venue">—</div>
+          </div>
+          <div class="cm-tile">
+            <div class="cm-tile-label">Production Time</div>
+            <div class="cm-tile-val" id="res-weeks">—</div>
+          </div>
+          <div class="cm-tile">
+            <div class="cm-tile-label">Modular Split</div>
+            <div class="cm-tile-val sage" id="res-reuse-pct">—</div>
+          </div>
+        </div>
+
+        <!-- Comparison chart + savings -->
+        <div class="cm-compare">
+          <div class="cm-compare-head">
+            <span class="cm-compare-title">Traditional vs Your Model</span>
+            <span class="cm-compare-note">Traditional = same inputs, 0% reuse</span>
+          </div>
+
+          <div class="cm-chart-wrap">
+            <!--
+              viewBox 0 0 380 156
+              Bars: trad x=44 w=110 / new x=226 w=110. Baseline y=120. Max bar h=96.
+              Dynamic: bar y/height and value labels updated by JS.
+            -->
+            <svg id="cm-chart" viewBox="0 0 380 156" xmlns="http://www.w3.org/2000/svg">
+              <!-- Baseline -->
+              <line x1="16" y1="120" x2="364" y2="120"
+                    stroke="#ddd8cf" stroke-width="0.75"/>
+
+              <!-- Trad bar (ghost track) -->
+              <rect x="44" y="24" width="110" height="96" rx="2"
+                    fill="#ede9e0"/>
+              <!-- Trad bar (actual) -->
+              <rect id="cm-bar-trad" x="44" y="24" width="110" height="96" rx="2"
+                    fill="#b5ada4"/>
+              <text id="cm-lbl-trad" x="99" y="20" text-anchor="middle"
+                    font-family="Georgia, serif" font-size="11.5" fill="#5a534d">£0</text>
+              <text x="99" y="140" text-anchor="middle"
+                    font-family="Helvetica Neue, Arial, sans-serif"
+                    font-size="8" fill="#9a9189" letter-spacing="0.06em">TRADITIONAL</text>
+
+              <!-- New model bar (ghost track) -->
+              <rect x="226" y="24" width="110" height="96" rx="2"
+                    fill="#ede9e0"/>
+              <!-- New model bar (actual) -->
+              <rect id="cm-bar-new" x="226" y="24" width="110" height="96" rx="2"
+                    fill="#c4603a"/>
+              <text id="cm-lbl-new" x="281" y="20" text-anchor="middle"
+                    font-family="Georgia, serif" font-size="11.5" fill="#1a1714">£0</text>
+              <text x="281" y="140" text-anchor="middle"
+                    font-family="Helvetica Neue, Arial, sans-serif"
+                    font-size="8" fill="#9a9189" letter-spacing="0.06em">YOUR MODEL</text>
+
+              <!-- Saving label (between bars, centered) -->
+              <text id="cm-lbl-save-a" x="190" y="65" text-anchor="middle"
+                    font-family="Helvetica Neue, Arial, sans-serif"
+                    font-size="9.5" font-weight="700" fill="#4e7d5e" letter-spacing="0.02em"></text>
+              <text id="cm-lbl-save-b" x="190" y="78" text-anchor="middle"
+                    font-family="Helvetica Neue, Arial, sans-serif"
+                    font-size="8" fill="#4e7d5e" opacity="0.8"></text>
+
+              <!-- Revenue line -->
+              <line id="cm-rev-line" x1="16" y1="50" x2="364" y2="50"
+                    stroke="#4e7d5e" stroke-width="0.75" stroke-dasharray="4 3" opacity="0.5"/>
+              <text id="cm-rev-label" x="18" y="46"
+                    font-family="Helvetica Neue, Arial, sans-serif"
+                    font-size="7.5" fill="#4e7d5e" opacity="0.75" letter-spacing="0.04em">Revenue</text>
+            </svg>
+          </div>
+
+          <!-- Savings row -->
+          <div class="cm-savings">
+            <div class="cm-saving">
+              <div class="cm-saving-val" id="sav-budget">—</div>
+              <div class="cm-saving-label">Budget saving</div>
+            </div>
+            <div class="cm-saving">
+              <div class="cm-saving-val" id="sav-margin">—</div>
+              <div class="cm-saving-label">Margin-point uplift</div>
+            </div>
+            <div class="cm-saving">
+              <div class="cm-saving-val" id="sav-weeks">—</div>
+              <div class="cm-saving-label">Weeks saved</div>
+            </div>
+          </div>
+        </div><!-- /cm-compare -->
+
+        <!-- Cost breakdown -->
+        <div class="cm-breakdown">
+          <div class="cm-bd-title">Budget breakdown — your model</div>
+          <div class="cm-bd-row">
+            <div class="cm-bd-label">New-build fabrication</div>
+            <div class="cm-bd-track"><div class="cm-bd-fill f-new"    id="bd-fill-new"    style="width:0%"></div></div>
+            <div class="cm-bd-val" id="bd-val-new">£0</div>
+          </div>
+          <div class="cm-bd-row">
+            <div class="cm-bd-label">Reuse / modular</div>
+            <div class="cm-bd-track"><div class="cm-bd-fill f-reuse"   id="bd-fill-reuse"  style="width:0%"></div></div>
+            <div class="cm-bd-val" id="bd-val-reuse">£0</div>
+          </div>
+          <div class="cm-bd-row">
+            <div class="cm-bd-label">Freight &amp; logistics</div>
+            <div class="cm-bd-track"><div class="cm-bd-fill f-freight" id="bd-fill-freight" style="width:0%"></div></div>
+            <div class="cm-bd-val" id="bd-val-freight">£0</div>
+          </div>
+          <div class="cm-bd-row">
+            <div class="cm-bd-label">Design &amp; interpretation</div>
+            <div class="cm-bd-track"><div class="cm-bd-fill f-design"  id="bd-fill-design"  style="width:0%"></div></div>
+            <div class="cm-bd-val" id="bd-val-design">£0</div>
+          </div>
+          <div class="cm-bd-row">
+            <div class="cm-bd-label">Contingency</div>
+            <div class="cm-bd-track"><div class="cm-bd-fill f-conting" id="bd-fill-conting" style="width:0%"></div></div>
+            <div class="cm-bd-val" id="bd-val-conting">£0</div>
+          </div>
+        </div><!-- /cm-breakdown -->
+
+      </div><!-- /cm-results -->
+    </div><!-- /cm-layout -->
+  </section><!-- /costing -->
+
+  <!-- ══════════════════════════════════════════
+       TAB 4 — SUSTAINABILITY
+  ══════════════════════════════════════════ -->
+  <section class="tab-panel" id="panel-sustainability" role="tabpanel" aria-labelledby="tab-sustainability">
+
+    <!-- Header -->
+    <div class="eco-header">
+      <p class="hero-eyebrow">Sustainability &amp; Regenerative Metrics</p>
+      <h2>Environmental Dashboard — ECHO Tour</h2>
+      <p class="eco-header-sub">Modelling the environmental case for a regenerative, reuse-first exhibition build across three cities.</p>
+    </div>
+
+    <!-- Mode toggle -->
+    <div class="eco-toggle-row">
+      <div class="eco-toggle" role="group" aria-label="Production mode">
+        <button class="eco-mode-btn" data-eco="new" id="eco-btn-new">
+          <span class="eco-dot"></span>Build new
+        </button>
+        <button class="eco-mode-btn active" data-eco="reuse" id="eco-btn-reuse">
+          <span class="eco-dot"></span>Reuse &amp; modular
+        </button>
+      </div>
+      <div class="eco-mode-caption reuse-active" id="eco-caption">
+        Showing: Reuse &amp; modular — ECHO proposed model
+      </div>
+    </div>
+
+    <!-- KPI tiles -->
+    <div class="eco-kpi-grid">
+
+      <!-- 0: Carbon footprint -->
+      <div class="eco-kpi lit" id="eco-kpi-0">
+        <div class="eco-kpi-icon sage">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 18C6 18 3 15 3 11c0-5 4-9 7-9 3 0 7 4 7 9 0 4-3 7-7 7z"/>
+            <path d="M10 7v6M7 13c1-2 3-2 3-2s2 0 3 2"/>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.2rem">
+          <span class="eco-kpi-num" id="eco-kv-0">183</span>
+          <span class="eco-kpi-unit">tCO₂e</span>
+        </div>
+        <div class="eco-kpi-label">Carbon Footprint</div>
+        <div class="eco-kpi-delta sage" id="eco-kd-0">−38% vs build new</div>
+      </div>
+
+      <!-- 1: Material reuse -->
+      <div class="eco-kpi lit" id="eco-kpi-1">
+        <div class="eco-kpi-icon sage">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16,4 19,4 19,7"/><polyline points="4,16 1,16 1,13"/>
+            <path d="M19 4A9 9 0 0 0 4 10M1 16a9 9 0 0 0 15 4"/>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.2rem">
+          <span class="eco-kpi-num" id="eco-kv-1">64</span>
+          <span class="eco-kpi-unit">%</span>
+        </div>
+        <div class="eco-kpi-label">Material Reuse</div>
+        <div class="eco-kpi-delta sage" id="eco-kd-1">+56 pts vs build new</div>
+      </div>
+
+      <!-- 2: Waste diverted -->
+      <div class="eco-kpi lit" id="eco-kpi-2">
+        <div class="eco-kpi-icon sage">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4,17 4,10 10,4 16,10 16,17"/>
+            <polyline points="7,17 7,13 13,13 13,17"/>
+            <line x1="10" y1="4" x2="10" y2="1"/>
+            <polyline points="8,3 10,1 12,3"/>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.2rem">
+          <span class="eco-kpi-num" id="eco-kv-2">81</span>
+          <span class="eco-kpi-unit">%</span>
+        </div>
+        <div class="eco-kpi-label">Waste Diverted</div>
+        <div class="eco-kpi-delta sage" id="eco-kd-2">+59 pts vs build new</div>
+      </div>
+
+      <!-- 3: Water use -->
+      <div class="eco-kpi lit" id="eco-kpi-3">
+        <div class="eco-kpi-icon sage">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3L5 10a6 6 0 0 0 10 0z"/>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.2rem">
+          <span class="eco-kpi-num" id="eco-kv-3">360</span>
+          <span class="eco-kpi-unit">m³</span>
+        </div>
+        <div class="eco-kpi-label">Water Use</div>
+        <div class="eco-kpi-delta sage" id="eco-kd-3">−33% vs build new</div>
+      </div>
+
+      <!-- 4: LCA Score -->
+      <div class="eco-kpi lit" id="eco-kpi-4">
+        <!-- Animated ring in corner -->
+        <div class="eco-lca-ring">
+          <svg viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="14" stroke="#ddd8cf" stroke-width="3.5"/>
+            <circle id="eco-lca-arc" cx="18" cy="18" r="14"
+                    stroke="#4e7d5e" stroke-width="3.5" stroke-linecap="round"
+                    stroke-dasharray="0 87.96"
+                    transform="rotate(-90 18 18)"/>
+          </svg>
+        </div>
+        <div class="eco-kpi-icon sage">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 14A8 8 0 0 1 17 14"/>
+            <line x1="10" y1="14" x2="14" y2="10"/>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:0.2rem">
+          <span class="eco-kpi-num" id="eco-kv-4">78</span>
+          <span class="eco-kpi-unit">/100</span>
+        </div>
+        <div class="eco-kpi-label">LCA Score</div>
+        <div class="eco-kpi-delta sage" id="eco-kd-4">+37 pts vs build new</div>
+      </div>
+
+    </div><!-- /eco-kpi-grid -->
+
+
+    <!-- Charts row -->
+    <div class="eco-charts">
+
+      <!-- Chart 1: Carbon emissions by phase (horizontal bar) -->
+      <div class="eco-chart-card">
+        <div class="eco-chart-head">
+          <span class="eco-chart-title">Carbon Emissions by Phase</span>
+          <span class="eco-chart-total" id="eco-carbon-total">183 tCO₂e total</span>
+        </div>
+        <!--
+          viewBox 0 0 480 185. Horizontal bars.
+          Label col: x 0-116. Bar area x 126-416 (290px). Val col x 424+.
+          5 rows. Row top y = 8 + i*37. Bar h=22.
+          Max value=295 (full bar=290px). Scale=290/295=0.9831 px per tCO₂e.
+        -->
+        <svg id="eco-bar-chart" viewBox="0 0 480 185" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="eco-bar-clip-0"><rect x="126" y="8"  width="290" height="22" rx="2"/></clipPath>
+            <clipPath id="eco-bar-clip-1"><rect x="126" y="45" width="290" height="22" rx="2"/></clipPath>
+            <clipPath id="eco-bar-clip-2"><rect x="126" y="82" width="290" height="22" rx="2"/></clipPath>
+            <clipPath id="eco-bar-clip-3"><rect x="126" y="119" width="290" height="22" rx="2"/></clipPath>
+            <clipPath id="eco-bar-clip-4"><rect x="126" y="156" width="290" height="22" rx="2"/></clipPath>
+          </defs>
+
+          <!-- Row 0: Fabrication -->
+          <text x="114" y="23" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="9.5" fill="#5a534d">Fabrication</text>
+          <rect x="126" y="8"   width="290" height="22" rx="2" fill="#ede9e0"/>
+          <rect id="eco-bar-0" x="126" y="8"   width="0" height="22" rx="2" fill="#c4603a" clip-path="url(#eco-bar-clip-0)"/>
+          <text id="eco-bval-0" x="424" y="23" font-family="Courier New, monospace" font-size="9" fill="#5a534d"></text>
+
+          <!-- Row 1: Freight -->
+          <text x="114" y="60" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="9.5" fill="#5a534d">Freight</text>
+          <rect x="126" y="45"  width="290" height="22" rx="2" fill="#ede9e0"/>
+          <rect id="eco-bar-1" x="126" y="45"  width="0" height="22" rx="2" fill="#e8987c" clip-path="url(#eco-bar-clip-1)"/>
+          <text id="eco-bval-1" x="424" y="60" font-family="Courier New, monospace" font-size="9" fill="#5a534d"></text>
+
+          <!-- Row 2: Energy / Operations -->
+          <text x="114" y="97" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="9.5" fill="#5a534d">Energy</text>
+          <rect x="126" y="82"  width="290" height="22" rx="2" fill="#ede9e0"/>
+          <rect id="eco-bar-2" x="126" y="82"  width="0" height="22" rx="2" fill="#78a888" clip-path="url(#eco-bar-clip-2)"/>
+          <text id="eco-bval-2" x="424" y="97" font-family="Courier New, monospace" font-size="9" fill="#5a534d"></text>
+
+          <!-- Row 3: Materials -->
+          <text x="114" y="134" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="9.5" fill="#5a534d">Materials</text>
+          <rect x="126" y="119" width="290" height="22" rx="2" fill="#ede9e0"/>
+          <rect id="eco-bar-3" x="126" y="119" width="0" height="22" rx="2" fill="#d4914a" clip-path="url(#eco-bar-clip-3)"/>
+          <text id="eco-bval-3" x="424" y="134" font-family="Courier New, monospace" font-size="9" fill="#5a534d"></text>
+
+          <!-- Row 4: End-of-life -->
+          <text x="114" y="171" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="9.5" fill="#5a534d">End-of-life</text>
+          <rect x="126" y="156" width="290" height="22" rx="2" fill="#ede9e0"/>
+          <rect id="eco-bar-4" x="126" y="156" width="0" height="22" rx="2" fill="#9a9189" clip-path="url(#eco-bar-clip-4)"/>
+          <text id="eco-bval-4" x="424" y="171" font-family="Courier New, monospace" font-size="9" fill="#5a534d"></text>
+        </svg>
+
+        <!-- Bar chart legend -->
+        <div style="display:flex;flex-wrap:wrap;gap:0.75rem 1.25rem;margin-top:0.875rem">
+          <div style="display:flex;align-items:center;gap:0.35rem">
+            <div style="width:8px;height:8px;border-radius:1px;background:#c4603a;flex-shrink:0"></div>
+            <span style="font-size:0.6875rem;color:var(--ink-faint)">Fabrication</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.35rem">
+            <div style="width:8px;height:8px;border-radius:1px;background:#e8987c;flex-shrink:0"></div>
+            <span style="font-size:0.6875rem;color:var(--ink-faint)">Freight</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.35rem">
+            <div style="width:8px;height:8px;border-radius:1px;background:#78a888;flex-shrink:0"></div>
+            <span style="font-size:0.6875rem;color:var(--ink-faint)">Energy</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.35rem">
+            <div style="width:8px;height:8px;border-radius:1px;background:#d4914a;flex-shrink:0"></div>
+            <span style="font-size:0.6875rem;color:var(--ink-faint)">Materials</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.35rem">
+            <div style="width:8px;height:8px;border-radius:1px;background:#9a9189;flex-shrink:0"></div>
+            <span style="font-size:0.6875rem;color:var(--ink-faint)">End-of-life</span>
+          </div>
+        </div>
+      </div><!-- /chart 1 -->
+
+      <!-- Chart 2: Material breakdown (donut) -->
+      <div class="eco-chart-card">
+        <div class="eco-chart-head">
+          <span class="eco-chart-title">Material Breakdown</span>
+          <span class="eco-chart-total" id="eco-mat-mode">Reuse &amp; modular</span>
+        </div>
+        <div class="eco-donut-layout">
+          <!--
+            ViewBox 0 0 160 160. Center (80,80). Ring r=55, stroke-width=26.
+            Circumference = 2π × 55 ≈ 345.6.
+            Segments: [Reused, Recycled, New, Consumables]
+            transform="rotate(-90 80 80)" so 0% = 12 o'clock.
+            dashoffset = 345.6*(0.25 - cumulative/100)
+          -->
+          <svg class="eco-donut-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background ring -->
+            <circle cx="80" cy="80" r="55" fill="none" stroke="#ede9e0" stroke-width="26"/>
+            <!-- Segments (order: Reused, Recycled, New, Consumables) -->
+            <circle id="eco-dseg-0" cx="80" cy="80" r="55" fill="none"
+                    stroke="#4e7d5e" stroke-width="26"
+                    stroke-dasharray="0 345.6" stroke-dashoffset="86.4"
+                    transform="rotate(-90 80 80)"
+                    style="transition:stroke-dasharray 0.55s ease,stroke-dashoffset 0.55s ease"/>
+            <circle id="eco-dseg-1" cx="80" cy="80" r="55" fill="none"
+                    stroke="#78a888" stroke-width="26"
+                    stroke-dasharray="0 345.6" stroke-dashoffset="86.4"
+                    transform="rotate(-90 80 80)"
+                    style="transition:stroke-dasharray 0.55s ease,stroke-dashoffset 0.55s ease"/>
+            <circle id="eco-dseg-2" cx="80" cy="80" r="55" fill="none"
+                    stroke="#c4603a" stroke-width="26"
+                    stroke-dasharray="0 345.6" stroke-dashoffset="86.4"
+                    transform="rotate(-90 80 80)"
+                    style="transition:stroke-dasharray 0.55s ease,stroke-dashoffset 0.55s ease"/>
+            <circle id="eco-dseg-3" cx="80" cy="80" r="55" fill="none"
+                    stroke="#9a9189" stroke-width="26"
+                    stroke-dasharray="0 345.6" stroke-dashoffset="86.4"
+                    transform="rotate(-90 80 80)"
+                    style="transition:stroke-dasharray 0.55s ease,stroke-dashoffset 0.55s ease"/>
+            <!-- Centre labels -->
+            <text id="eco-donut-pct" x="80" y="75" text-anchor="middle"
+                  font-family="Georgia, serif" font-size="19" fill="#1a1714"
+                  letter-spacing="-0.02em">64%</text>
+            <text id="eco-donut-lbl" x="80" y="91" text-anchor="middle"
+                  font-family="Helvetica Neue, Arial, sans-serif" font-size="8.5"
+                  fill="#9a9189" letter-spacing="0.06em" text-transform="uppercase">REUSED</text>
+          </svg>
+
+          <!-- Legend -->
+          <div class="eco-donut-legend">
+            <div class="eco-leg-item">
+              <div class="eco-leg-swatch" style="background:#4e7d5e"></div>
+              <span class="eco-leg-name">Reused</span>
+              <span class="eco-leg-pct" id="eco-lpct-0">64%</span>
+            </div>
+            <div class="eco-leg-item">
+              <div class="eco-leg-swatch" style="background:#78a888"></div>
+              <span class="eco-leg-name">Recycled</span>
+              <span class="eco-leg-pct" id="eco-lpct-1">18%</span>
+            </div>
+            <div class="eco-leg-item">
+              <div class="eco-leg-swatch" style="background:#c4603a"></div>
+              <span class="eco-leg-name">New material</span>
+              <span class="eco-leg-pct" id="eco-lpct-2">12%</span>
+            </div>
+            <div class="eco-leg-item">
+              <div class="eco-leg-swatch" style="background:#9a9189"></div>
+              <span class="eco-leg-name">Consumables</span>
+              <span class="eco-leg-pct" id="eco-lpct-3">6%</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- /chart 2 -->
+
+    </div><!-- /eco-charts -->
+
+
+    <!-- SDG Alignment -->
+    <div class="eco-sdg-section">
+      <div class="eco-sdg-eyebrow">UN Sustainable Development Goal Alignment</div>
+      <div class="eco-sdg-grid">
+
+        <!-- SDG 9 -->
+        <div class="eco-sdg-card">
+          <div class="eco-sdg-top">
+            <div class="eco-sdg-num" style="background:#f36e24">9</div>
+            <div class="eco-sdg-name">Industry, Innovation &amp; Infrastructure</div>
+          </div>
+          <div class="eco-sdg-body">
+            <p>Digital-first production tools and modular build systems represent a scalable, transferable innovation in cultural infrastructure delivery.</p>
+          </div>
+        </div>
+
+        <!-- SDG 11 -->
+        <div class="eco-sdg-card">
+          <div class="eco-sdg-top">
+            <div class="eco-sdg-num" style="background:#f99d26">11</div>
+            <div class="eco-sdg-name">Sustainable Cities &amp; Communities</div>
+          </div>
+          <div class="eco-sdg-body">
+            <p>Adaptive, reusable exhibition design makes high-quality cultural experiences financially viable in diverse and rapidly developing urban contexts.</p>
+          </div>
+        </div>
+
+        <!-- SDG 12 -->
+        <div class="eco-sdg-card">
+          <div class="eco-sdg-top">
+            <div class="eco-sdg-num" style="background:#bf8b2e">12</div>
+            <div class="eco-sdg-name">Responsible Consumption &amp; Production</div>
+          </div>
+          <div class="eco-sdg-body">
+            <p>Modular reuse cuts single-use fabrication waste by 73% across the three-venue tour, with a material passport tracking every component.</p>
+          </div>
+        </div>
+
+        <!-- SDG 13 -->
+        <div class="eco-sdg-card">
+          <div class="eco-sdg-top">
+            <div class="eco-sdg-num" style="background:#3f7e44">13</div>
+            <div class="eco-sdg-name">Climate Action</div>
+          </div>
+          <div class="eco-sdg-body">
+            <p>The reuse-first build model reduces the tour's carbon footprint from 295 to 183 tCO₂e — a 38% reduction aligned with a 1.5°C pathway.</p>
+          </div>
+        </div>
+
+      </div><!-- /eco-sdg-grid -->
+    </div><!-- /eco-sdg-section -->
+
+  </section><!-- /sustainability -->
+
+  <!-- ══════════════════════════════════════════
+       TAB 5 — COLLABORATION
+  ══════════════════════════════════════════ -->
+  <section class="tab-panel" id="panel-collaboration" role="tabpanel" aria-labelledby="tab-collaboration">
+
+    <!-- Header -->
+    <div class="collab-header">
+      <p class="hero-eyebrow">Global Digital Workflows — ECHO Tour</p>
+      <h2>Cross-Cultural Collaboration Model</h2>
+      <p class="collab-header-sub">Three city teams, one shared production pipeline. Distributed working across the UK, UAE and KSA — coordinated digitally at every phase from concept to close.</p>
+    </div>
+
+    <!-- City cards -->
+    <div class="collab-cities">
+
+      <!-- London -->
+      <div class="city-card">
+        <div class="city-card-head">
+          <div class="city-flag">
+            <!-- UK flag inline SVG -->
+            <svg class="city-flag-icon" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="20" fill="#012169"/>
+              <path d="M0,0 L28,20 M28,0 L0,20" stroke="white" stroke-width="4"/>
+              <path d="M0,0 L28,20 M28,0 L0,20" stroke="#C8102E" stroke-width="2.5"/>
+              <path d="M14,0 V20 M0,10 H28" stroke="white" stroke-width="5.5"/>
+              <path d="M14,0 V20 M0,10 H28" stroke="#C8102E" stroke-width="3.5"/>
+            </svg>
+            <span class="collab-city-name">London</span>
+          </div>
+          <div class="city-clock">
+            <span class="city-time" id="clock-london">--:--</span>
+            <span class="city-tz">BST / UTC+1</span>
+          </div>
+        </div>
+        <div class="city-card-body">
+          <div class="city-roles-label">Team roles</div>
+          <div class="city-role"><span class="city-role-dot"></span>Curatorial Lead</div>
+          <div class="city-role"><span class="city-role-dot"></span>Lead Interpretation &amp; Content</div>
+          <div class="city-role"><span class="city-role-dot"></span>Concept &amp; Creative Director</div>
+          <div class="city-role"><span class="city-role-dot"></span>Digital Assets Manager</div>
+          <div class="city-role"><span class="city-role-dot"></span>Evaluation &amp; Impact Lead</div>
+          <div class="city-role"><span class="city-role-dot shared"></span><em style="color:var(--sage)">Programme Director ↗ shared</em></div>
+          <div class="city-role"><span class="city-role-dot shared"></span><em style="color:var(--sage)">Sustainability Lead ↗ shared</em></div>
+        </div>
+      </div>
+
+      <!-- Dubai -->
+      <div class="city-card">
+        <div class="city-card-head">
+          <div class="city-flag">
+            <!-- UAE flag inline SVG -->
+            <svg class="city-flag-icon" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="20" fill="white"/>
+              <rect width="28" height="6.67" fill="#00732F"/>
+              <rect y="13.33" width="28" height="6.67" fill="#000"/>
+              <rect width="7" height="20" fill="#FF0000"/>
+            </svg>
+            <span class="collab-city-name">Dubai</span>
+          </div>
+          <div class="city-clock">
+            <span class="city-time" id="clock-dubai">--:--</span>
+            <span class="city-tz">GST / UTC+4</span>
+          </div>
+        </div>
+        <div class="city-card-body">
+          <div class="city-roles-label">Team roles</div>
+          <div class="city-role"><span class="city-role-dot"></span>Exhibition Design Lead</div>
+          <div class="city-role"><span class="city-role-dot"></span>Client &amp; Partner Liaison</div>
+          <div class="city-role"><span class="city-role-dot"></span>AV &amp; Technology Integrator</div>
+          <div class="city-role"><span class="city-role-dot"></span>Venue Coordinator</div>
+          <div class="city-role"><span class="city-role-dot"></span>Arabic Localisation Specialist</div>
+          <div class="city-role" style="opacity:0">&nbsp;</div>
+          <div class="city-role" style="opacity:0">&nbsp;</div>
+        </div>
+      </div>
+
+      <!-- Riyadh -->
+      <div class="city-card">
+        <div class="city-card-head">
+          <div class="city-flag">
+            <!-- Saudi Arabia flag inline SVG -->
+            <svg class="city-flag-icon" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="20" fill="#006C35"/>
+              <!-- Simplified white shahada text as rect + sword shape -->
+              <rect x="4" y="5" width="20" height="2.5" rx="1" fill="white" opacity="0.9"/>
+              <rect x="4" y="8.5" width="20" height="1.5" rx="0.75" fill="white" opacity="0.9"/>
+              <polygon points="9,12 19,12 18,14 10,14" fill="white" opacity="0.9"/>
+              <rect x="13.5" y="14" width="1" height="2.5" rx="0.5" fill="white" opacity="0.9"/>
+            </svg>
+            <span class="collab-city-name">Riyadh</span>
+          </div>
+          <div class="city-clock">
+            <span class="city-time" id="clock-riyadh">--:--</span>
+            <span class="city-tz">AST / UTC+3</span>
+          </div>
+        </div>
+        <div class="city-card-body">
+          <div class="city-roles-label">Team roles</div>
+          <div class="city-role"><span class="city-role-dot"></span>Production &amp; Fabrication Lead</div>
+          <div class="city-role"><span class="city-role-dot"></span>Installation Manager</div>
+          <div class="city-role"><span class="city-role-dot"></span>Logistics &amp; Freight Coordinator</div>
+          <div class="city-role"><span class="city-role-dot"></span>Cultural Advisory Liaison</div>
+          <div class="city-role"><span class="city-role-dot"></span>Technical Operations Lead</div>
+          <div class="city-role" style="opacity:0">&nbsp;</div>
+          <div class="city-role" style="opacity:0">&nbsp;</div>
+        </div>
+      </div>
+
+    </div><!-- /collab-cities -->
+
+    <!-- Shared cross-city roles -->
+    <div class="collab-shared">
+      <span class="collab-shared-label">Cross-city roles</span>
+      <div class="collab-shared-roles">
+        <span class="collab-shared-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Programme Director
+        </span>
+        <span class="collab-shared-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Sustainability Lead
+        </span>
+        <span class="collab-shared-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Digital Collaboration Platform
+        </span>
+        <span class="collab-shared-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M12 2a14.5 14.5 0 0 1 0 20M2 12h20"/></svg>
+          Shared Asset Library
+        </span>
+      </div>
+    </div>
+
+    <!-- RACI matrix -->
+    <div class="raci-section">
+      <div class="raci-section-head">
+        <h3 class="raci-section-title">Responsibility Matrix — ECHO Production Lifecycle</h3>
+        <div class="raci-legend">
+          <span class="raci-legend-item"><span class="raci-legend-badge r">R</span>Responsible</span>
+          <span class="raci-legend-item"><span class="raci-legend-badge a">A</span>Accountable</span>
+          <span class="raci-legend-item"><span class="raci-legend-badge c">C</span>Consulted</span>
+          <span class="raci-legend-item"><span class="raci-legend-badge i">I</span>Informed</span>
+        </div>
+      </div>
+      <div class="raci-table-wrap">
+        <table class="raci-table">
+          <thead>
+            <tr>
+              <th style="width:34%">Phase</th>
+              <th class="th-city" style="width:16%">London</th>
+              <th class="th-city" style="width:16%">Dubai</th>
+              <th class="th-city" style="width:16%">Riyadh</th>
+              <th class="th-shared" style="width:18%">Shared/All</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-phase">1 — Concept
+                <span class="td-phase-sub">Creative brief &amp; vision</span>
+              </td>
+              <td><span class="raci-badge a">A</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge i">I</span></td>
+              <td><span class="raci-badge r">R</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">2 — Curatorial research
+                <span class="td-phase-sub">Themes, objects, sources</span>
+              </td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">3 — Interpretation &amp; content
+                <span class="td-phase-sub">Texts, media, localisation</span>
+              </td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">4 — Design
+                <span class="td-phase-sub">Spatial, graphic, AV</span>
+              </td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">5 — Fabrication
+                <span class="td-phase-sub">Build, manufacture, QA</span>
+              </td>
+              <td><span class="raci-badge i">I</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">6 — Freight &amp; install
+                <span class="td-phase-sub">Crating, transport, fit-out</span>
+              </td>
+              <td><span class="raci-badge i">I</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">7 — Open
+                <span class="td-phase-sub">Operations, visitor experience</span>
+              </td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+            <tr>
+              <td class="td-phase">8 — Evaluate
+                <span class="td-phase-sub">Impact, lessons, reporting</span>
+              </td>
+              <td><span class="raci-badge r">R</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge c">C</span></td>
+              <td><span class="raci-badge a">A</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="raci-callout">Phases 3–6 illustrate the core digital handoff: London authors content, Dubai adapts design for each venue, Riyadh leads physical production and install. All three teams share access to a live asset library and a single programme dashboard — no siloed documents, no emailed PSDs.</p>
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-credits">Concept prototype by <strong>Noyal George</strong></span>
+    <span class="footer-note">ECHO — Exhibition Development OS &middot; Single-file prototype &middot; No external dependencies</span>
+  </div>
+</footer>
+
+<script>
+  // ── Tab navigation ──
+  const nav   = document.getElementById('main-nav');
+  const tabs  = nav.querySelectorAll('.nav-tab');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  const panelMap = {
+    overview:       'panel-overview',
+    process:        'panel-process',
+    costing:        'panel-costing',
+    sustainability: 'panel-sustainability',
+    collaboration:  'panel-collaboration',
+  };
+
+  function activateTab(key) {
+    tabs.forEach(t => {
+      const on = t.dataset.panel === key;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.setAttribute('tabindex',      on ? '0'    : '-1');
+    });
+    panels.forEach(p => {
+      p.classList.toggle('active', p.id === panelMap[key]);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => activateTab(tab.dataset.panel));
+  });
+
+  // Keyboard navigation: ArrowRight/Left cycle tabs, Home/End jump to ends
+  nav.addEventListener('keydown', function(e) {
+    const list = Array.from(tabs);
+    const idx  = list.indexOf(document.activeElement);
+    if (idx === -1) return;
+    let next = idx;
+    if      (e.key === 'ArrowRight') next = (idx + 1) % list.length;
+    else if (e.key === 'ArrowLeft')  next = (idx - 1 + list.length) % list.length;
+    else if (e.key === 'Home')       next = 0;
+    else if (e.key === 'End')        next = list.length - 1;
+    else return;
+    e.preventDefault();
+    activateTab(list[next].dataset.panel);
+    list[next].focus();
+  });
+
+  // ── Sustainability Dashboard ──
+  (function () {
+
+    // ─── Data ───────────────────────────────────────
+    const DATA = {
+      new: {
+        kpis: [295, 8, 22, 540, 41],           // carbon, reuse%, waste%, water, lca
+        bars: [142, 48, 38, 42, 25],            // fab, freight, energy, materials, eol
+        mats: [8, 12, 72, 8],                   // reused, recycled, new, consumables
+      },
+      reuse: {
+        kpis: [183, 64, 81, 360, 78],
+        bars: [62, 38, 36, 31, 16],
+        mats: [64, 18, 12, 6],
+      },
+    };
+
+    // KPI metadata: [label, unit, lowerIsBetter, deltaLabel(reuse), deltaLabel(new)]
+    const KPI_META = [
+      { unit: 'tCO₂e', low: true,  dReuse: '−38% vs build new',  dNew: '+61% vs reuse' },
+      { unit: '%',     low: false, dReuse: '+56 pts vs build new', dNew: '−56 pts vs reuse' },
+      { unit: '%',     low: false, dReuse: '+59 pts vs build new', dNew: '−59 pts vs reuse' },
+      { unit: 'm³',    low: true,  dReuse: '−33% vs build new',   dNew: '+50% vs reuse' },
+      { unit: '/100',  low: false, dReuse: '+37 pts vs build new', dNew: '−37 pts vs reuse' },
+    ];
+
+    const MAT_LABELS = ['Reused', 'Recycled', 'New material', 'Consumables'];
+    const DONUT_C    = 345.6; // 2π × 55
+
+    // Current displayed state (starts on "reuse" mode)
+    let currentMode = 'reuse';
+    let currentKpis = [...DATA.reuse.kpis];
+    let currentBars = [...DATA.reuse.bars];
+    let currentMats = [...DATA.reuse.mats];
+
+    const $ = id => document.getElementById(id);
+
+    // ─── Shared tween engine ─────────────────────────
+    function runTweens(tweens, duration) {
+      const t0 = performance.now();
+      const from = tweens.map(t => t.from);
+      function step(now) {
+        const p    = Math.min((now - t0) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3); // cubic out
+        tweens.forEach((tw, i) => tw.set(from[i] + (tw.to - from[i]) * ease));
+        if (p < 1) requestAnimationFrame(step);
+        else tweens.forEach(tw => tw.set(tw.to));
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ─── Number formatters ───────────────────────────
+    function fmtKpi(val, unit) {
+      const rounded = Math.round(val);
+      if (unit === '%' || unit === '/100') return rounded;
+      return rounded.toLocaleString('en-GB');
+    }
+
+    // ─── Update KPI tiles ────────────────────────────
+    function buildKpiTweens(fromVals, toVals) {
+      return toVals.map((to, i) => ({
+        from: fromVals[i],
+        to,
+        set: v => { $('eco-kv-' + i).textContent = fmtKpi(v, KPI_META[i].unit); },
+      }));
+    }
+
+    function setKpiDeltas(mode) {
+      KPI_META.forEach((meta, i) => {
+        const el = $('eco-kd-' + i);
+        const isGood = mode === 'reuse' ? true : false;
+        el.textContent = mode === 'reuse' ? meta.dReuse : meta.dNew;
+        el.className   = 'eco-kpi-delta ' + (isGood ? 'sage' : 'terra');
+      });
+      // Lit top border
+      document.querySelectorAll('.eco-kpi').forEach(kpi => {
+        kpi.classList.toggle('lit', mode === 'reuse');
+      });
+    }
+
+    // ─── LCA ring ────────────────────────────────────
+    function buildLcaTween(from, to) {
+      const C = 87.96; // 2π × 14 (r=14 in 36px viewBox)
+      return {
+        from,
+        to,
+        set: v => {
+          const len = C * (v / 100);
+          $('eco-lca-arc').style.strokeDasharray = len + ' ' + C;
+        },
+      };
+    }
+
+    // ─── Bar chart ───────────────────────────────────
+    const BAR_MAX_W = 290;
+    const BAR_MAX_V = 295; // max possible value (build new fabrication is 142, total 295)
+    const BAR_SCALE = BAR_MAX_W / BAR_MAX_V;
+
+    function buildBarTweens(fromVals, toVals) {
+      return toVals.map((to, i) => ({
+        from: fromVals[i],
+        to,
+        set: v => {
+          $('eco-bar-' + i).setAttribute('width', Math.max(0, v * BAR_SCALE));
+          $('eco-bval-' + i).textContent = Math.round(v) + ' t';
+        },
+      }));
+    }
+
+    function setChartTotal(mode) {
+      const total = DATA[mode].bars.reduce((a, b) => a + b, 0);
+      $('eco-carbon-total').textContent = total + ' tCO₂e total';
+      $('eco-mat-mode').textContent =
+        mode === 'reuse' ? 'Reuse & modular' : 'Build new';
+    }
+
+    // ─── Donut ───────────────────────────────────────
+    function buildDonutTweens(fromPcts, toPcts) {
+      // For each segment: tween its percentage, then derive dasharray/offset
+      return toPcts.map((to, i) => ({
+        from: fromPcts[i],
+        to,
+        set: () => {}, // done below via combined setter
+      }));
+    }
+
+    function setDonutFromPcts(pcts) {
+      let cum = 0;
+      pcts.forEach((pct, i) => {
+        const len    = pct * DONUT_C / 100;
+        const offset = DONUT_C * (0.25 - cum / 100);
+        const seg    = $('eco-dseg-' + i);
+        seg.style.strokeDasharray  = len + ' ' + DONUT_C;
+        seg.style.strokeDashoffset = offset;
+        cum += pct;
+      });
+      // Centre label — dominant segment
+      const max    = Math.max(...pcts);
+      const maxIdx = pcts.indexOf(max);
+      $('eco-donut-pct').textContent = Math.round(max) + '%';
+      $('eco-donut-lbl').textContent = MAT_LABELS[maxIdx].toUpperCase();
+    }
+
+    function buildDonutAllTween(fromPcts, toPcts) {
+      return fromPcts.map((from, i) => ({
+        from,
+        to: toPcts[i],
+        set: () => {},  // placeholder — we call setDonutFromPcts after all
+      }));
+    }
+
+    // Combined donut tween (runs in parallel with others)
+    function runDonutTween(fromPcts, toPcts, duration) {
+      const t0   = performance.now();
+      const froms = [...fromPcts];
+      function step(now) {
+        const p    = Math.min((now - t0) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        const cur  = froms.map((f, i) => f + (toPcts[i] - f) * ease);
+        setDonutFromPcts(cur);
+        // Legend pct labels
+        cur.forEach((v, i) => {
+          $('eco-lpct-' + i).textContent = Math.round(v) + '%';
+        });
+        if (p < 1) requestAnimationFrame(step);
+        else {
+          setDonutFromPcts(toPcts);
+          toPcts.forEach((v, i) => {
+            $('eco-lpct-' + i).textContent = Math.round(v) + '%';
+          });
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ─── Toggle UI ───────────────────────────────────
+    function setToggleUI(mode) {
+      $('eco-btn-new').classList.toggle('active',   mode === 'new');
+      $('eco-btn-reuse').classList.toggle('active', mode === 'reuse');
+      const cap = $('eco-caption');
+      if (mode === 'reuse') {
+        cap.textContent = 'Showing: Reuse & modular — ECHO proposed model';
+        cap.className   = 'eco-mode-caption reuse-active';
+      } else {
+        cap.textContent = 'Showing: Build new — conventional approach';
+        cap.className   = 'eco-mode-caption';
+      }
+    }
+
+    // ─── Main switch ─────────────────────────────────
+    function switchMode(mode) {
+      if (mode === currentMode) return;
+      const DURATION = 580;
+
+      const prevKpis = [...currentKpis];
+      const prevBars = [...currentBars];
+      const prevMats = [...currentMats];
+
+      currentMode = mode;
+      currentKpis = [...DATA[mode].kpis];
+      currentBars = [...DATA[mode].bars];
+      currentMats = [...DATA[mode].mats];
+
+      // All numeric tweens at once
+      const tweens = [
+        ...buildKpiTweens(prevKpis, currentKpis),
+        ...buildBarTweens(prevBars, currentBars),
+        buildLcaTween(prevKpis[4], currentKpis[4]),
+      ];
+      runTweens(tweens, DURATION);
+
+      // Donut runs its own RAF loop (needs intermediate pct arrays)
+      runDonutTween(prevMats, currentMats, DURATION);
+
+      // Instant UI + label updates
+      setKpiDeltas(mode);
+      setChartTotal(mode);
+      setToggleUI(mode);
+    }
+
+    // ─── Init ────────────────────────────────────────
+    function init() {
+      // Render initial state (reuse mode)
+      DATA.reuse.kpis.forEach((v, i) => {
+        $('eco-kv-' + i).textContent = fmtKpi(v, KPI_META[i].unit);
+      });
+      buildLcaTween(0, DATA.reuse.kpis[4]).set(DATA.reuse.kpis[4]);
+      DATA.reuse.bars.forEach((v, i) => {
+        $('eco-bar-' + i).setAttribute('width', v * BAR_SCALE);
+        $('eco-bval-' + i).textContent = v + ' t';
+      });
+      setDonutFromPcts(DATA.reuse.mats);
+      DATA.reuse.mats.forEach((v, i) => {
+        $('eco-lpct-' + i).textContent = v + '%';
+      });
+      setKpiDeltas('reuse');
+      setChartTotal('reuse');
+      setToggleUI('reuse');
+    }
+
+    // ─── Event listeners ─────────────────────────────
+    document.querySelectorAll('.eco-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchMode(btn.dataset.eco));
+    });
+
+    init();
+  })();
+
+  // ── Costing Model ──
+  (function () {
+    const REVENUE_PER_VENUE   = 1_600_000;
+    const NEW_PER_M2          = 950;
+    const REUSE_INITIAL_PER_M2 = 280;
+    const RESKIN_PER_M2       = 120;
+    const CHART_H             = 96;   // SVG px for max bar
+    const BASELINE_Y          = 120;  // SVG y for baseline
+
+    const $ = id => document.getElementById(id);
+
+    const sliders = {
+      area:        $('inp-area'),
+      reuse:       $('inp-reuse'),
+      venues:      $('inp-venues'),
+      freight:     $('inp-freight'),
+      design:      $('inp-design'),
+      contingency: $('inp-contingency'),
+    };
+
+    // ── Number formatters ──
+    function fmtPound(n) {
+      return '£' + Math.round(n).toLocaleString('en-GB');
+    }
+    function fmtM(n) {
+      const m = n / 1_000_000;
+      return '£' + (m % 1 === 0 ? m.toFixed(0) : m.toFixed(2).replace(/0+$/, '')) + 'm';
+    }
+
+    // ── Core calculation ──
+    function compute(area, reusePC, venues, freight, designFees, contingencyPC) {
+      const ru = reusePC / 100;
+      const nw = 1 - ru;
+
+      const newBuildCost = area * nw * NEW_PER_M2 * venues;
+      const reuseInitial = area * ru * REUSE_INITIAL_PER_M2;
+      const reuseReskin  = area * ru * RESKIN_PER_M2 * venues;
+      const reuseTotal   = reuseInitial + reuseReskin;
+      const freightTotal = freight * venues;
+
+      const subtotal    = newBuildCost + reuseTotal + freightTotal + designFees;
+      const contingency = subtotal * (contingencyPC / 100);
+      const totalCost   = subtotal + contingency;
+      const totalRevenue = REVENUE_PER_VENUE * venues;
+      const margin       = (totalRevenue - totalCost) / totalRevenue * 100;
+      const costPerVenue = totalCost / venues;
+
+      // Production weeks
+      const baseWeeks     = 18 - 4 * ru;
+      const weeksPerVenue = 10 * nw + 5 * ru;
+      const freightWeeks  = 2 * (venues - 1);
+      const totalWeeks    = Math.round(baseWeeks + weeksPerVenue * venues + freightWeeks);
+
+      return {
+        newBuildCost, reuseTotal, freightTotal, designFees, contingency,
+        subtotal, totalCost, totalRevenue, margin, costPerVenue, totalWeeks,
+      };
+    }
+
+    // ── Update range track fill ──
+    function updateTrack(el, isKey) {
+      const pct = (el.value - el.min) / (el.max - el.min) * 100;
+      const c   = isKey ? '#4e7d5e' : '#c4603a';
+      el.style.background =
+        `linear-gradient(to right, ${c} 0%, ${c} ${pct}%, #ddd8cf ${pct}%, #ddd8cf 100%)`;
+    }
+
+    // ── Update the SVG bar chart ──
+    function updateChart(tradCost, newCost, revTotal) {
+      const maxVal  = Math.max(tradCost, newCost, revTotal) * 1.05;
+      const scale   = v => Math.max(2, CHART_H * (v / maxVal));
+
+      const tradH   = scale(tradCost);
+      const newH    = scale(newCost);
+      const revH    = scale(revTotal);
+
+      // Traditional bar
+      $('cm-bar-trad').setAttribute('y', BASELINE_Y - tradH);
+      $('cm-bar-trad').setAttribute('height', tradH);
+      $('cm-lbl-trad').setAttribute('y', BASELINE_Y - tradH - 5);
+      $('cm-lbl-trad').textContent = fmtM(tradCost);
+
+      // New model bar — change colour when saving is large
+      const saving = tradCost - newCost;
+      const barColor = saving > 0 ? '#c4603a' : '#b5ada4';
+      $('cm-bar-new').setAttribute('fill', barColor);
+      $('cm-bar-new').setAttribute('y', BASELINE_Y - newH);
+      $('cm-bar-new').setAttribute('height', newH);
+      $('cm-lbl-new').setAttribute('y', BASELINE_Y - newH - 5);
+      $('cm-lbl-new').textContent = fmtM(newCost);
+
+      // Revenue dashed line
+      const revY = BASELINE_Y - revH;
+      $('cm-rev-line').setAttribute('y1', revY);
+      $('cm-rev-line').setAttribute('y2', revY);
+      $('cm-rev-label').setAttribute('y', revY - 4);
+
+      // Saving label — midpoint between bar tops
+      if (saving > 0) {
+        const midY  = BASELINE_Y - (tradH + newH) / 2;
+        $('cm-lbl-save-a').setAttribute('y', midY - 6);
+        $('cm-lbl-save-b').setAttribute('y', midY + 7);
+        $('cm-lbl-save-a').textContent = '−' + fmtM(saving);
+        $('cm-lbl-save-b').textContent = 'saved';
+      } else {
+        $('cm-lbl-save-a').textContent = '';
+        $('cm-lbl-save-b').textContent = '';
+      }
+    }
+
+    // ── Update cost breakdown bars ──
+    function updateBreakdown(r) {
+      const total = r.totalCost;
+      function set(key, val) {
+        const pct = Math.round(100 * val / total);
+        $('bd-fill-' + key).style.width = pct + '%';
+        $('bd-val-'  + key).textContent  = fmtPound(val);
+      }
+      set('new',     r.newBuildCost);
+      set('reuse',   r.reuseTotal);
+      set('freight', r.freightTotal);
+      set('design',  r.designFees);
+      set('conting', r.contingency);
+    }
+
+    // ── Main recalculate ──
+    function recalc() {
+      const area        = +sliders.area.value;
+      const reusePC     = +sliders.reuse.value;
+      const venues      = +sliders.venues.value;
+      const freight     = +sliders.freight.value;
+      const designFees  = +sliders.design.value;
+      const contingPC   = +sliders.contingency.value;
+
+      // Update track fills
+      updateTrack(sliders.area,        false);
+      updateTrack(sliders.reuse,       true);
+      updateTrack(sliders.venues,      false);
+      updateTrack(sliders.freight,     false);
+      updateTrack(sliders.design,      false);
+      updateTrack(sliders.contingency, false);
+
+      // Update value labels
+      $('val-area').textContent   = area.toLocaleString('en-GB') + ' m²';
+      $('val-reuse').textContent  = reusePC === 0   ? '100% new build'
+                                  : reusePC === 100 ? '100% reused'
+                                  : reusePC + '% reused';
+      $('val-venues').textContent    = venues + ' venue' + (venues !== 1 ? 's' : '');
+      $('val-freight').textContent   = fmtPound(freight);
+      $('val-design').textContent    = fmtPound(designFees);
+      $('val-contingency').textContent = contingPC + '%';
+
+      // Compute current and traditional models
+      const cur  = compute(area, reusePC,  venues, freight, designFees, contingPC);
+      const trad = compute(area, 0,        venues, freight, designFees, contingPC);
+
+      // ── Results: total ──
+      $('res-total').textContent = fmtPound(cur.totalCost);
+
+      const venueLabel = venues + ' venue' + (venues !== 1 ? 's' : '');
+      $('res-revenue-ctx').textContent =
+        'vs. ' + fmtPound(cur.totalRevenue) + ' revenue · ' + venueLabel;
+
+      const marginSign = cur.margin >= 0 ? '+' : '';
+      const badge = $('res-margin-badge');
+      badge.textContent = marginSign + cur.margin.toFixed(1) + '% margin';
+      badge.className   = 'cm-margin-badge ' + (cur.margin >= 5 ? 'positive' : 'negative');
+
+      // ── Secondary tiles ──
+      $('res-per-venue').textContent = fmtPound(cur.costPerVenue);
+      $('res-weeks').textContent     = cur.totalWeeks + ' wk';
+      $('res-reuse-pct').textContent = reusePC + '% modular';
+
+      // ── Savings ──
+      const budgetSave  = trad.totalCost  - cur.totalCost;
+      const marginUplift = cur.margin     - trad.margin;
+      const weeksSaved  = trad.totalWeeks - cur.totalWeeks;
+
+      function setSaving(id, val, fmt) {
+        const el = $(id);
+        el.textContent = fmt(val);
+        el.className   = 'cm-saving-val' +
+          (val > 0 ? '' : val === 0 ? ' zero' : ' negative');
+      }
+
+      setSaving('sav-budget', budgetSave,
+        v => v >= 0 ? '−' + fmtPound(v) : '+' + fmtPound(-v));
+      setSaving('sav-margin', marginUplift,
+        v => (v >= 0 ? '+' : '') + v.toFixed(1) + ' pts');
+      setSaving('sav-weeks', weeksSaved,
+        v => v >= 0 ? '−' + v + ' wk' : '+' + (-v) + ' wk');
+
+      // ── Chart ──
+      updateChart(trad.totalCost, cur.totalCost, cur.totalRevenue);
+
+      // ── Breakdown ──
+      updateBreakdown(cur);
+    }
+
+    // Attach slider events
+    Object.values(sliders).forEach(el => el.addEventListener('input', recalc));
+
+    // How-calculated toggle
+    $('cm-how-toggle').addEventListener('click', function () {
+      this.classList.toggle('open');
+      $('cm-how-body').classList.toggle('open');
+    });
+
+    // Boot
+    recalc();
+  })();
+
+  // ── Collaboration tab: live city clocks ──
+  (function() {
+    const CITIES = [
+      { id: 'clock-london', offset:  1 },
+      { id: 'clock-dubai',  offset:  4 },
+      { id: 'clock-riyadh', offset:  3 },
+    ];
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      const now = new Date();
+      const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+      CITIES.forEach(function(c) {
+        const el = document.getElementById(c.id);
+        if (!el) return;
+        const local = new Date(utcMs + c.offset * 3600000);
+        const h = pad(local.getHours());
+        const m = pad(local.getMinutes());
+        el.innerHTML = h + '<span class="clock-colon">:</span>' + m;
+      });
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  // ── Sync Overview tiles with Costing Model slider defaults ──
+  // Reads the slider `value` attributes as the single source of truth.
+  // If a default ever changes in the HTML, this stays in sync automatically.
+  (function() {
+    function v(id) { return +document.getElementById(id).value; }
+    const area    = v('inp-area');
+    const ruPct   = v('inp-reuse');
+    const venues  = v('inp-venues');
+    const freight = v('inp-freight');
+    const design  = v('inp-design');
+    const conting = v('inp-contingency');
+
+    const ru = ruPct / 100, nw = 1 - ru;
+    const sub = area * nw * 950 * venues
+              + area * ru * 280
+              + area * ru * 120 * venues
+              + freight * venues
+              + design;
+    const total = sub * (1 + conting / 100);
+
+    document.getElementById('ov-budget').textContent = '£' + (total / 1e6).toFixed(1);
+    document.getElementById('ov-reuse').textContent  = ruPct;
+  })();
+
+  // ── Process Mapper model toggle ──
+  const modelToggle = document.querySelector('.model-toggle');
+  if (modelToggle) {
+    modelToggle.addEventListener('click', function(e) {
+      const btn = e.target.closest('.model-btn');
+      if (!btn || btn.classList.contains('active')) return;
+      this.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.pm-view').forEach(v => v.classList.remove('active'));
+      document.getElementById('pm-view-' + btn.dataset.model).classList.add('active');
+    });
+  }
+</script>
+
+</body>
+</html>

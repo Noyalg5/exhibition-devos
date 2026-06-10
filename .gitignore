@@ -1,0 +1,13 @@
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Dependencies
+node_modules/
