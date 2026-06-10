@@ -4,7 +4,7 @@
 
 ## Live demo
 
-Live demo: _(GitHub Pages link will go here)_
+Live demo: https://noyalg5.github.io/exhibition-devos/
 
 ## About
 
